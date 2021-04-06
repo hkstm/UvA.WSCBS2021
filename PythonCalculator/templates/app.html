@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Calculator WebService</title>
+
+    <style>
+      .alert {
+        max-width: page;
+        background: white;
+        padding: 1rem;
+        border-radius: 5px;
+        color: black;
+        
+        
+        text-align: center;
+        
+      }
+
+      .container{
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h3>Calculator WebService</h3>
+    </div>
+
+    <!-- Form -->
+    <div class="container">
+      <form action="/calculate" method="POST">
+       
+        <input
+          type="text"
+          placeholder="First Number"
+          class="u-full-width"
+          name="num1"
+        />
+
+        <select class="u-full-width" name="operation">
+          <option value="add">+</option>
+          <option value="subtract">-</option>
+          <option value="multiply">*</option>
+          <option value="divide">/</option>
+        </select>
+       
+        <input
+          type="text"
+          placeholder="Second Number"
+          class="u-full-width"
+          name="num2"
+        />
+
+     
+
+
+        <input type="submit" value="Calculate" id="calc_btn" />
+        <br />
+        <div class="alert">
+          {{ result }}
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
