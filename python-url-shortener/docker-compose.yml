@@ -1,0 +1,13 @@
+version: "3.3"
+services:
+  shortener:
+    build: .
+    ports:
+      - 80:80
+    environment:
+      REDIS_ADDRESS: redis
+      PERSIST: "yes"
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
