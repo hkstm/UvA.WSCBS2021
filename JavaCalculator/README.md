@@ -1,22 +1,19 @@
 # Java calculator
 
-TODO:
-
-  - Frontend for testing
-  - WSDL check
-  -
 
 ### Usage instructions
 
-- Install glassfish & docker
-- In glassfish directory (or the domain you prefer):
+- Install glassfish
+- In `JavaCalculator` directory :
      ```sh
-    $ ./asadmin start-domain domain1
+    # Clean and package war file
+	$ mvn clean && mvn package
+    # Copy package to auto-deploy directory of glassfish
+    $ cp target/calculator_wscbs.war {glassfish_directory}/domains/domain1/calculator_wscbs.war
     ```
-- In `JavaCalculator` directory:
+- In glassfish directory:
      ```sh
-	$ sudo docker build calculator_wscbs
-	$ sudo ./buildAndRun.sh
+    $ ./bin/asadmin start-domain domain1
     ```
 
 ### Links
@@ -24,8 +21,10 @@ http://localhost:8080//calculator_wscbs/CalculatorWS?Tester
 http://localhost:8080/calculator_wscbs/
 http://localhost:8080/calculator_wscbs/CalculatorWS?wsdl
 
-### Postman requests
-endpoint: `http://daans-laptop-linux:8080/calculator_wscbs/CalculatorWS`
+### Postman example
+endpoint: `http://localhost:8080/calculator_wscbs/CalculatorWS`
+
+'request:`
 ```xml
 <?xml version="1.0" encoding="UTF-8"?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"
 xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
@@ -38,3 +37,16 @@ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
     </S:Body>
 </S:Envelope>
 ```
+
+`response:`
+```xml
+<?xml version='1.0' encoding='UTF-8'?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+    <S:Body>
+        <ns2:multiplyResponse xmlns:ns2="http://calculator.me.org/">
+            <return>4900</return>
+        </ns2:multiplyResponse>
+    </S:Body>
+</S:Envelope>
+```
+
