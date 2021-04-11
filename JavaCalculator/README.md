@@ -17,14 +17,15 @@
     ```
 
 ### Links
-http://localhost:8080//calculator_wscbs/CalculatorWS?Tester
-http://localhost:8080/calculator_wscbs/
-http://localhost:8080/calculator_wscbs/CalculatorWS?wsdl
+[http://localhost:8080/calculator_wscbs/CalculatorWS?Tester](http://localhost:8080/calculator_wscbs/CalculatorWS?Tester)
+[http://localhost:8080/calculator_wscbs/](http://localhost:8080/calculator_wscbs/)
+[http://localhost:8080/calculator_wscbs/CalculatorWS?wsdl](http://localhost:8080/calculator_wscbs/CalculatorWS?wsdl)
+
 
 ### Postman example
 endpoint: `http://localhost:8080/calculator_wscbs/CalculatorWS`
 
-'request:`
+`request:`
 ```xml
 <?xml version="1.0" encoding="UTF-8"?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"
 xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
