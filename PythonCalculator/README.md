@@ -3,10 +3,13 @@ The Calculator Service is build with the libraries: Spyne (server) and Zeep (cli
 
 A Naive frontend is implemented with Flask. 
 
-Please run:
-$ python CalculatorService.py to start the server. 
+Please run to start the server. :
 
-$ python CaclulatorClient.py to start the client. 
+$ python CalculatorService.py
+
+Please run to start the client: 
+
+$ python CaclulatorClient.py
 
 The latter will rederict you to a localhost, where one can make use of the service by filling in numbers and an operation. 
 
