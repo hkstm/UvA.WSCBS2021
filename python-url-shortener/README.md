@@ -63,13 +63,13 @@ curl -i -X GET localhost:5000/2
 curl -i -X GET localhost:5000/4abc
 
 # change the URL the key points to
-curl -i -X PUT -d 'value=https://google.com' localhost:5000/2
+curl -i -X PUT -d 'url=https://google.com' localhost:5000/2
 
 # change the URL of a nonexistent key
-curl -i -X PUT -d 'value=https://google.com' localhost:5000/6uw
+curl -i -X PUT -d 'url=https://google.com' localhost:5000/6uw
 
 # change the URL to an invalid URL
-curl -i -X PUT -d 'value=https://google' localhost:5000/2
+curl -i -X PUT -d 'url=https://google' localhost:5000/2
 
 # check that the key now points to google
 curl -i -X GET localhost:5000/2
@@ -83,10 +83,14 @@ curl -i -X DELETE localhost:5000/777
 # delete all the keys added by your IP address
 curl -i -X DELETE localhost:5000
 
-# use a spoofed IP address to shorten a URL
-curl -i --header "X-Forwarded-For: 192.168.0.2" -X POST -d 'url=https://wikipedia.com' localhost:5000
+# use a different user id to shorten a URL
+curl -i -X POST -d 'user_id=testuser' -d 'url=https://wikipedia.com' localhost:5000
 
-curl -i -X GET localhost:5000/2
+# check that other users cannot see the shortened ID
+curl -i -X GET localhost:5000
+
+# check that the testuser can see (or delete) the ID
+curl -i -X GET 'localhost:5000/?user_id=testuser'
 ```
 
 #### Tests

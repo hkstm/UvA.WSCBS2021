@@ -32,12 +32,14 @@ def get_entry(key):
 
 @app.route("/<key>", methods=["PUT"])
 def set_entry(key):
-    # ... assuming that PUT updates a key value mapping (which needs a parameter that is not in the table)
-    value = request.values.get("value")
-    if not value or len(value) < 1:
-        return "missing value", 400
+    # NOTE: We assume that the PUT call is supposed to update the value for a key
+    # This needs a parameter that is not in the table
+    url = request.values.get("url")
+    user_id = request.values.get("user_id") or request.remote_addr
+    if not url or len(url) < 1:
+        return "missing url", 400
     try:
-        shortener.update(key, value, user_id=request.remote_addr)
+        shortener.update(key, url, user_id=user_id)
     except NotFoundException as e:
         return str(e), 404
     except InvalidURLException as e:
@@ -49,8 +51,9 @@ def set_entry(key):
 
 @app.route("/<key>", methods=["DELETE"])
 def delete_entry(key):
+    user_id = request.values.get("user_id") or request.remote_addr
     try:
-        shortener.delete(key, user_id=request.remote_addr)
+        shortener.delete(key, user_id=user_id)
     except NotFoundException as e:
         return str(e), 404
     return "", 204
@@ -58,19 +61,23 @@ def delete_entry(key):
 
 @app.route("/", methods=["GET"])
 def get_all_entries():
-    return jsonify(shortener.get_all(user_id=request.remote_addr)), 200
+    user_id = request.values.get("user_id") or request.remote_addr
+    return jsonify(shortener.get_all(user_id=user_id)), 200
 
 
 @app.route("/", methods=["POST"])
 def add_new_entry():
+    user_id = request.values.get("user_id") or request.remote_addr
     url = request.values.get("url")
     try:
-        return shortener.add(url, user_id=request.remote_addr), 201
+        return shortener.add(url, user_id=user_id), 201
     except (InvalidURLException, AlreadyExistsException) as e:
         return str(e), 400
 
 
 @app.route("/", methods=["DELETE"])
 def delete_all_entries():
-    shortener.delete_all(user_id=request.remote_addr)
+    user_id = request.values.get("user_id") or request.remote_addr
+    url = request.values.get("url")
+    shortener.delete_all(user_id=user_id)
     return "", 204
