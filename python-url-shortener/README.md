@@ -2,6 +2,27 @@
 
 This simple python service maps URLs to short keys. At the moment, there are two backends, one in-memory implementation and one persistent implementation using `redis` as a database.
 
+#### Install prerequisites
+
+The easiest way is to use the docker based deployment, as it does not require installation of any packages.
+For local development, the easiest installation is using `pipenv`:
+
+```bash
+pip install --upgrade pip pipenv
+pipenv install --dev
+pipenv shell
+```
+
+This will setup a virtual environment for this project with the packages defined in the `Pipfile`. If you prefer to just use plain `pip install`, you can also have a look at the file and install the packages manually or use:
+
+```bash
+pip install --upgrade pip pipenv
+pipenv lock -r > requirements.txt
+pip install -r requirements.txt
+```
+
+#### Run the service
+
 ```bash
 # start the service with the in memory backend
 invoke start
@@ -61,6 +82,11 @@ curl -i -X DELETE localhost:5000/777
 
 # delete all the keys added by your IP address
 curl -i -X DELETE localhost:5000
+
+# use a spoofed IP address to shorten a URL
+curl -i --header "X-Forwarded-For: 192.168.0.2" -X POST -d 'url=https://wikipedia.com' localhost:5000
+
+curl -i -X GET localhost:5000/2
 ```
 
 #### Tests
