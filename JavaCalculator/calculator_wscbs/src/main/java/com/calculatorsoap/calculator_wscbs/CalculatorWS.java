@@ -20,29 +20,29 @@ import javax.jws.WebService;
 public class CalculatorWS {
   /** Web service operation - addition */
   @WebMethod(operationName = "add")
-  public int add(@WebParam(name = "x") int x, @WebParam(name = "y") int y) {
-    int z = x + y;
+  public float add(@WebParam(name = "x") float x, @WebParam(name = "y") float y) {
+    float z = x + y;
     return z;
   }
 
   /** Web service operation - subtract */
   @WebMethod(operationName = "subtract")
-  public int subtract(@WebParam(name = "x") int x, @WebParam(name = "y") int y) {
-    int z = x - y;
+  public float subtract(@WebParam(name = "x") float x, @WebParam(name = "y") float y) {
+    float z = x - y;
     return z;
   }
 
   /** Web service operation - multiply */
   @WebMethod(operationName = "multiply")
-  public int multiply(@WebParam(name = "x") int x, @WebParam(name = "y") int y) {
-    int z = x * y;
+  public float multiply(@WebParam(name = "x") float x, @WebParam(name = "y") float y) {
+    float z = x * y;
     return z;
   }
 
   /** Web service operation - divide */
   @WebMethod(operationName = "divide")
-  public int divide(@WebParam(name = "x") int x, @WebParam(name = "y") int y) {
-    int z = x / y;
+  public float divide(@WebParam(name = "x") float x, @WebParam(name = "y") float y) {
+    float z = x / y;
     return z;
   }
 }
