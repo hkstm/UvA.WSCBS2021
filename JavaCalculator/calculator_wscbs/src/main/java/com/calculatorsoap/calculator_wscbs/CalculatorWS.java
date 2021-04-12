@@ -6,48 +6,43 @@
 
 package org.me.calculator;
 
-import javax.jws.WebService;
+import javax.ejb.Stateless;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
-import javax.ejb.Stateless;
+import javax.jws.WebService;
 
 /**
  *
  * @author daan
  */
-@WebService(serviceName="CalculatorWS")
+@WebService(serviceName = "CalculatorWS")
 //@Stateless()
 public class CalculatorWS {
-    
-    /** Web service operation - addition */
-    @WebMethod(operationName = "add")
-    public int add(@WebParam(name = "x") int x, @WebParam(name = "y") int y) {
-        int z = x + y;
-        return z;
-    }
+  /** Web service operation - addition */
+  @WebMethod(operationName = "add")
+  public int add(@WebParam(name = "x") int x, @WebParam(name = "y") int y) {
+    int z = x + y;
+    return z;
+  }
 
-    /** Web service operation - subtract */
-    @WebMethod(operationName = "subtract")
-    public int subtract(@WebParam(name = "x") int x, @WebParam(name = "y") int y) {
-        int z = x - y;
-        return z;
-    }
+  /** Web service operation - subtract */
+  @WebMethod(operationName = "subtract")
+  public int subtract(@WebParam(name = "x") int x, @WebParam(name = "y") int y) {
+    int z = x - y;
+    return z;
+  }
 
-    /** Web service operation - multiply */
-    @WebMethod(operationName = "multiply")
-    public int multiply(@WebParam(name = "x") int x, @WebParam(name = "y") int y) {
-        int z = x * y;
-        return z;
-    }
+  /** Web service operation - multiply */
+  @WebMethod(operationName = "multiply")
+  public int multiply(@WebParam(name = "x") int x, @WebParam(name = "y") int y) {
+    int z = x * y;
+    return z;
+  }
 
-    /** Web service operation - divide */
-    @WebMethod(operationName = "divide")
-    public int divide(@WebParam(name = "x") int x, @WebParam(name = "y") int y) {
-        int z = x / y;
-        return z;
-    }   
-
-    
-
+  /** Web service operation - divide */
+  @WebMethod(operationName = "divide")
+  public int divide(@WebParam(name = "x") int x, @WebParam(name = "y") int y) {
+    int z = x / y;
+    return z;
+  }
 }
-
