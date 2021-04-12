@@ -1,4 +1,4 @@
-This folders contains a Python SOAP Web-Service Caclulator. 
+This directory contains a Python SOAP Web-Service Caclulator. 
 The Calculator Service is build with the libraries: Spyne (server), Zeep (client). 
 
 A Naive frontend is implemented with Flask. 
