@@ -3,6 +3,14 @@ The Calculator Service is build with the libraries: Spyne (server) and Zeep (cli
 
 A Naive frontend is implemented with Flask. 
 
+Please make sure you have the newest versions of Zeep, Spyne and Flask installed. If not install them accordingly. 
+
+Or run 
+
+```bash
+pip install -r requirements.txt
+```
+
 Please run to start the server. :
 
 ```bash
