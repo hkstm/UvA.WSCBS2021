@@ -10,16 +10,16 @@ import javax.ejb.Stateless;
  * Calculator SOAP Web Service which operates on floats,
  * with the following operations:
  *      - Add
- *      - Add
- *      - Add
- *      - Add
+ *      - Subtract
+ *      - Multiply
+ *      - Divide
  */
 @WebService(serviceName="CalculatorWS")
 @SchemaValidation
 public class CalculatorWS {
     
     /** Web service operation - addition */
-    @WebMethod(operationName = "addd")
+    @WebMethod(operationName = "add")
     public float add(@WebParam(name = "x") float x, @WebParam(name = "y") float y) {
         float z = x + y;
         return z;
