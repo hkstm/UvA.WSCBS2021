@@ -4,6 +4,20 @@ from collections import defaultdict
 import redis
 
 
+class KVStoreException(Exception):
+    pass
+
+
+class NotFoundException(KVStoreException):
+    def __init__(self):
+        super().__init__("key not found or not allowed to update this key")
+
+
+class AlreadyExistsException(KVStoreException):
+    def __init__(self, key):
+        super().__init__("key %s does already exist" % key)
+
+
 class KeyValueStore(ABC):
     """ Abstract interface of a key value store """
 
@@ -38,7 +52,7 @@ class InMemoryKeyValueStore(KeyValueStore):
 
     def set(self, key, value, user_id, exists_ok=False):
         if not exists_ok and (key in self.data and not self.data[key] != value):
-            raise KeyError("key %s does already exist" % key)
+            raise AlreadyExistsException(key)
         self.users[user_id].add(key)
         self.data[key] = value
         return value
@@ -51,12 +65,12 @@ class InMemoryKeyValueStore(KeyValueStore):
 
     def update(self, key, value, user_id):
         if not self._check_has_permission(key, user_id):
-            raise ValueError("not allowed to update this key")
+            raise NotFoundException()
         self.data[key] = value
 
     def delete(self, key, user_id):
         if key not in self.users[user_id]:
-            raise ValueError("not allowed to delete this key")
+            raise NotFoundException()
         self.users[user_id].remove(key)
         return self.data.pop(key)
 
@@ -81,7 +95,7 @@ class PersistentKeyValueStore(KeyValueStore):
         if not exists_ok and (
             self.db.exists(key) and self.db.get(key).decode("utf8") != value
         ):
-            raise KeyError("key %s does already exist" % key)
+            raise AlreadyExistsException(key)
         self.users.sadd(user_id, key)
         return self.db.set(key, value)
 
@@ -101,13 +115,13 @@ class PersistentKeyValueStore(KeyValueStore):
 
     def delete(self, key, user_id):
         if not self._check_has_permission(key, user_id):
-            raise ValueError("not allowed to delete this key")
+            raise NotFoundException()
         self.users.srem(user_id, key)
         return self.db.delete(key)
 
     def update(self, key, value, user_id):
         if not self._check_has_permission(key, user_id):
-            raise ValueError("not allowed to update this key")
+            raise NotFoundException()
         return self.db.set(key, value)
 
     def delete_all(self, user_id):

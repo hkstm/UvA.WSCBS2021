@@ -2,7 +2,16 @@ import hashlib
 
 import validators
 
-from python_url_shortener.kvstore import InMemoryKeyValueStore
+from python_url_shortener.kvstore import AlreadyExistsException, InMemoryKeyValueStore
+
+
+class URLShortenerException(Exception):
+    pass
+
+
+class InvalidURLException(URLShortenerException):
+    def __init__(self, url):
+        super().__init__("invalid url: %s" % url)
 
 
 def hash_url(url, user_id=None):
@@ -28,6 +37,8 @@ class URLShortener:
         return self.kvstore.delete(key, user_id=user_id)
 
     def update(self, key, value, user_id=None):
+        if not is_valid_url(value):
+            raise InvalidURLException(value)
         return self.kvstore.update(key, value, user_id=user_id)
 
     def delete_all(self, user_id=None):
@@ -35,7 +46,7 @@ class URLShortener:
 
     def add(self, url, user_id=None):
         if not is_valid_url(url):
-            raise ValueError("invalid url: %s" % url)
+            raise InvalidURLException(url)
 
         # we attempt to use the shortest possible key
         # this is not as efficient as just permuting keys
@@ -47,7 +58,7 @@ class URLShortener:
             try:
                 self.kvstore.set(key, url, user_id=user_id, exists_ok=False)
                 return key
-            except KeyError:
+            except AlreadyExistsException:
                 continue
         # Note: this should never be reached
-        raise KeyError("key could not be stored")
+        raise AlreadyExistsException(hashed)
