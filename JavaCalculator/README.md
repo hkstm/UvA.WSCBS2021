@@ -3,8 +3,8 @@
 
 ### Usage instructions
 
-- Install glassfish
-- In `JavaCalculator` directory :
+- Install glassfish, the {glassfish_directory} referred to in these instructions might be nested in a structure like {/glassfish-5.0.1/glassfish5/glassfish/}, the {glassfish_directory} is the deepest directory with for example {bin} and {domains} subdirectories
+- In `JavaCalculator\calculator_wscbs` directory :
      ```sh
     # Clean and package war file
 	$ mvn clean && mvn package
@@ -14,6 +14,14 @@
 - In glassfish directory:
      ```sh
     $ ./bin/asadmin start-domain domain1
+    ```
+    If you do not see a calculator_wscbs application when doing:
+    ```sh
+    $ ./bin/asadmin list-applications
+    ```
+    Explicitly deploy the application by doing:
+    ```sh
+    $ ./bin/asadmin deploy ./domains/domain1/calculator_wscbs.war
     ```
 
 ### Links
