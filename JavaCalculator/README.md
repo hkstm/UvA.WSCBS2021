@@ -26,12 +26,16 @@
 
 ### Links
 [http://localhost:8080/calculator_wscbs/CalculatorWS?Tester](http://localhost:8080/calculator_wscbs/CalculatorWS?Tester)
+
 [http://localhost:8080/calculator_wscbs/](http://localhost:8080/calculator_wscbs/)
+
 [http://localhost:8080/calculator_wscbs/CalculatorWS?wsdl](http://localhost:8080/calculator_wscbs/CalculatorWS?wsdl)
 
 
 ### Postman example
 endpoint: `http://localhost:8080/calculator_wscbs/CalculatorWS`
+
+*Please note* -  header `Content-Type` of request should be changed from `application/xml` to `text/xml`.
 
 `request:`
 ```xml
