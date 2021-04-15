@@ -20,7 +20,7 @@ def hash_url(url, user_id=None):
 
 
 def is_valid_url(url):
-    return validators.url(url)
+    return validators.url(str(url))
 
 
 class URLShortener:

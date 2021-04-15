@@ -36,7 +36,7 @@ def set_entry(key):
     # This needs a parameter that is not in the table
     url = request.values.get("url")
     user_id = request.values.get("user_id") or request.remote_addr
-    if not url or len(url) < 1:
+    if url is None or len(url) < 1:
         return "missing url", 400
     try:
         shortener.update(key, url, user_id=user_id)
@@ -69,6 +69,8 @@ def get_all_entries():
 def add_new_entry():
     user_id = request.values.get("user_id") or request.remote_addr
     url = request.values.get("url")
+    if url is None or len(url) < 1:
+        return "missing url", 400
     try:
         return shortener.add(url, user_id=user_id), 201
     except (InvalidURLException, AlreadyExistsException) as e:
