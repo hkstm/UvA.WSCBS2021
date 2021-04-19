@@ -3,6 +3,16 @@ from collections import defaultdict
 
 import redis
 
+class AuthorizationException(Exception):
+    pass
+
+class MissingTokenException(AuthorizationException):
+    def __init__(self):
+        super().__init__("Token is missing")
+
+class InvalidTokenException(AuthorizationException):
+     def __init__(self):
+        super().__init__("Token is invalid")
 
 class KVStoreException(Exception):
     pass
@@ -83,7 +93,7 @@ class InMemoryKeyValueStore(KeyValueStore):
 class PersistentKeyValueStore(KeyValueStore):
     """ Redis based persistent key value store """
 
-    def __init__(self, address="localhost", clean=False):
+    def __init__(self, address="localhost", clean=True):
         self.db = redis.Redis(address, db=0)
         self.users = redis.Redis(address, db=1)
         if clean:

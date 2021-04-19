@@ -14,8 +14,9 @@ class Authentication:
 
         try:
             storedpass = self.kvstore.get(username)
+            print(storedpass)
             if storedpass == password:
-                token = jwt.encode({'user': username}, secretkey)
+                token = jwt.encode({'user': username}, secretkey, algorithm="HS256")
                 return token
            
             else:
@@ -25,12 +26,16 @@ class Authentication:
             raise e
         except NotFoundException as e:
             raise e
+        except Exception:
+            print("somtheing else is wrong")
 
-    def post(self, username, password):
+    def post(self, username, password, user_id):
 
-        key = username
+        
         try:
-            self.kvstore.set(key, password, exists_ok=False)
-        except:
-            print("here")
-            raise AlreadyExistsException(username)
+            
+            self.kvstore.set(username, password, user_id, exists_ok=False)
+            return username
+        except Exception as e:
+            print(e)
+            #raise AlreadyExistsException(username)

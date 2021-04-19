@@ -63,7 +63,7 @@ class InMemoryKeyValueStore(KeyValueStore):
         return value
 
     def get(self, key):
-        return self.data.get(key, None)
+        return self.data.get(key)
 
     def get_all(self, user_id):
         return sorted(list(self.users[user_id]))
@@ -88,20 +88,20 @@ class InMemoryKeyValueStore(KeyValueStore):
 class PersistentKeyValueStore(KeyValueStore):
     """ Redis based persistent key value store """
 
-    def __init__(self, address="localhost", clean=False):
-        self.db = redis.Redis(address, db=0)
-        self.users = redis.Redis(address, db=1)
+    def __init__(self, address="127.0.0.1", clean=False):
+        self.db = redis.Redis(address, db=3)
+        self.users = redis.Redis(address, db=4)
         if clean:
             print("cleaning the database")
             self.db.flushdb()
             self.users.flushdb()
 
-    def set(self, key, value, exists_ok):
+    def set(self, key, value, user_id, exists_ok):
         if not exists_ok and (
             self.db.exists(key) and self.db.get(key).decode("utf8") != value
         ):
             raise AlreadyExistsException(key)
-        self.users.sadd(key)
+        self.users.sadd(user_id, key)
         return self.db.set(key, value)
 
     def get(self, key):

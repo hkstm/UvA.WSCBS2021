@@ -14,7 +14,7 @@ from authentication.authentication import Authentication
 
 storage_backend = (
     PersistentKeyValueStore(
-        address="localhost"
+        address="127.0.0.1"
        
     ))
 
@@ -27,9 +27,10 @@ authenticator = Authentication(storage_backend)
 def create_user():
     username = request.values.get("username")
     password = request.values.get("password")
-
+    
+    user_id = request.values.get("user_id") or request.remote_addr
     try:
-        authenticator.post(username, password)
+        authenticator.post(username, password, user_id)
 
     except AlreadyExistsException as e:        
         return str(e), 400
@@ -42,7 +43,7 @@ def create_user():
 def validate_user():
     username = request.values.get("username")
     password = request.values.get("password")
-
+    user_id = request.values.get("user_id") or request.remote_addr
     try:
         jwt_token = authenticator.get(username, password)     
        
