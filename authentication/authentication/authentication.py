@@ -10,13 +10,13 @@ class Authentication:
     def __init__(self, kvstore=None):
         self.kvstore = kvstore
 
-    def get(self, username, password):
+    def get(self, username, password, user_id):
 
         try:
             storedpass = self.kvstore.get(username)
-            print(storedpass)
+            
             if storedpass == password:
-                token = jwt.encode({'user': username}, secretkey, algorithm="HS256")
+                token = jwt.encode({'aud': user_id}, secretkey, algorithm="HS256")
                 return token
            
             else:
@@ -35,7 +35,7 @@ class Authentication:
         try:
             
             self.kvstore.set(username, password, user_id, exists_ok=False)
-            return username
-        except Exception as e:
+            
+        except AlreadyExistsException as e:
             print(e)
-            #raise AlreadyExistsException(username)
+            

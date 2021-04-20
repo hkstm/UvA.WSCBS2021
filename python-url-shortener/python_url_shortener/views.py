@@ -31,12 +31,12 @@ def token_required(f):
     def decorated(*args, **kwargs):
         
         token = request.values.get('token')  
-        print(token)
-        
+       
+        user_id = request.values.get('user_id')
 
         try:
-            data = jwt.decode(token, secretkey, algorithms="HS256")          
-            print(data)
+            data = jwt.decode(token, secretkey, audience=user_id, algorithms="HS256")          
+            
         
         except jwt.DecodeError:
             return "DecodeError", 403

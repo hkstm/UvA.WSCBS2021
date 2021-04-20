@@ -39,7 +39,8 @@ def delete_entry(key):
 @app.route("/", methods=["GET"])
 def get_all_entries():      
     token = request.values.get("token")  
-    params = {'token':token}
+    user_id = request.values.get("user_id") or request.remote_addr
+    params = {'token':token, 'user_id':user_id}
     response = requests.get('http://127.0.0.1:5000', params=params, verify=False)
     return response.content, response.status_code
 

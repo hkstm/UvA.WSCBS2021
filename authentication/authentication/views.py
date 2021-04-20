@@ -45,7 +45,7 @@ def validate_user():
     password = request.values.get("password")
     user_id = request.values.get("user_id") or request.remote_addr
     try:
-        jwt_token = authenticator.get(username, password)     
+        jwt_token = authenticator.get(username, password, user_id)     
        
 
     except NotFoundException as e:        
