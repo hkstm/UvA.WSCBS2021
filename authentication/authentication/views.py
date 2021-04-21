@@ -14,7 +14,7 @@ from authentication.authentication import Authentication
 
 storage_backend = (
     PersistentKeyValueStore(
-        address="127.0.0.1"
+        address="my-release-redis-master.default.svc.cluster.local"
        
     ))
 

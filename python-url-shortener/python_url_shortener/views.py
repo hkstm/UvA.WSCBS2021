@@ -1,23 +1,24 @@
 import os
 from functools import wraps
-from flask import jsonify, request
-import jwt
 
+import jwt
 import jwt.exceptions
+from flask import jsonify, request
+
 from python_url_shortener.app import app
 from python_url_shortener.kvstore import (
     AlreadyExistsException,
     InMemoryKeyValueStore,
+    MissingTokenException,
     NotFoundException,
     PersistentKeyValueStore,
-    MissingTokenException
-
 )
 from python_url_shortener.shortener import InvalidURLException, URLShortener
+
 secretkey = "verysecret"
 storage_backend = (
     PersistentKeyValueStore(
-        address="localhost"
+        address="my-release-redis-master.default.svc.cluster.local"
         # clean=os.environ.get("CLEAN_DATABASE") is not None,
     )
     # if os.environ.get("PERSIST")
@@ -29,27 +30,23 @@ shortener = URLShortener(storage_backend)
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        
-        token = request.values.get('token')  
-       
-        user_id = request.values.get('user_id')
+
+        token = request.values.get("token")
+
+        user_id = request.values.get("user_id")
 
         try:
-            data = jwt.decode(token, secretkey, audience=user_id, algorithms="HS256")          
-            
-        
+            data = jwt.decode(token, secretkey, audience=user_id, algorithms="HS256")
+
         except jwt.DecodeError:
             return "DecodeError", 403
 
         except jwt.InvalidTokenError:
             return "Forbidden", 403
 
-      
         return f(*args, **kwargs)
-        
+
     return decorated
-
-
 
 
 @app.route("/<key>", methods=["GET"])
@@ -80,10 +77,7 @@ def set_entry(key):
     except MissingTokenException as e:
         return str(e), 403
 
-
     return "", 200
-
-
 
 
 @app.route("/<key>", methods=["DELETE"])

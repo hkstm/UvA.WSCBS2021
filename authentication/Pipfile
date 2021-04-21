@@ -30,4 +30,3 @@ Flask = "*"
 validators = "*"
 redis = "*"
 PyJWT = "*"
-
