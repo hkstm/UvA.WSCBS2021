@@ -1,50 +1,50 @@
 #### Python URL Shortener
 
-This simple python service maps URLs to short keys. At the moment, there are two backends, one in-memory implementation and one persistent implementation using `redis` as a database.
+This simple python service maps URLs to short keys. Users need to login first. We use `redis` as a database. It uses `microk8s`, `istio` and `helm`.
 
-#### Install prerequisites
-
-The easiest way is to use the docker based deployment, as it does not require installation of any packages.
-For local development, the easiest installation is using `pipenv`:
-
-```bash
-pip install --upgrade pip pipenv
-pipenv install --dev
-pipenv shell
-```
-
-This will setup a virtual environment for this project with the packages defined in the `Pipfile`. If you prefer to just use plain `pip install`, you can also have a look at the file and install the packages manually or use:
+#### Setup
+Follow steps on
+https://microk8s.io/
+To install microk8s
+You could probably use something like minikube/k3s as well but dunno how to set that up. Make sure to install MicroK8s 1.21 (stable) otherwise your helm3 will not be able to install certain charts (like Redis at least).
 
 ```bash
-pip install --upgrade pip pipenv
-pipenv lock -r > requirements.txt
-pip install -r requirements.txt
+sudo snap install microk8s --classic --channel=1.21/stable
+microk8s status --wait-ready
+microk8s enable dashboard dns registry istio helm3 metallb
 ```
+For metallb set these ranges 10.64.140.43-10.64.140.49
 
-#### Run the service
+Optionally set aliases:
+
+- alias helm='microk8s helm3'
+- alias istioctl='microk8s istioctl'
+- alias kubectl='microk8s kubectl'
+
+In the rest of these instructions I am assuming you have these set 
 
 ```bash
-# start the service with the in memory backend
-invoke start
-
-# ... or start the service with persistence
-docker-compose up redis
-invoke start --persist
-
-# ... or start the service with persistence and a clean database (requires redis running)
-docker-compose up redis
-invoke start --persist --clean
+helm repo add stable https://charts.helm.sh/stable
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
 ```
 
-#### Docker based deployment
+#### Docker/Kubernetes based deployment
 
-To start redis and the URL shortener service with the redis backend, just up the docker compose setup
+In the python-url-shortener directory first execute
 ```bash
-docker-compose up
-# Note: the service will run on http://localhost:5000 as well
+helm install my-release bitnami/redis -f ./k8s/redis/values.yaml
+```
+To start `redis` then execute the commands in update_service.sh by, for example, doing:
+```bash
+./update_services.sh 
+```
+or, if needed:
+```bash
+sudo ./update_services.sh 
 ```
 
-#### Examples
+#### Examples (TODO: Add Authentication steps)
 
 ```bash
 # add a new URL
