@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-"""Top-level package for python url shortener."""
-from authentication import views as _views
+# """Top-level package for python url shortener."""
+from shortener import views as _views
 
 __author__ = """group03"""
 __email__ = "group03@noreply.com"

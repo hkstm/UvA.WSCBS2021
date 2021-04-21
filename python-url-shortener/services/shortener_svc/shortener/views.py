@@ -5,15 +5,16 @@ import jwt
 import jwt.exceptions
 from flask import jsonify, request
 
-from python_url_shortener.app import app
-from python_url_shortener.kvstore import (
+from shortener.app import app
+from shortener.kvstore import (
     AlreadyExistsException,
     InMemoryKeyValueStore,
     MissingTokenException,
     NotFoundException,
     PersistentKeyValueStore,
 )
-from python_url_shortener.shortener import InvalidURLException, URLShortener
+from shortener.shortener import InvalidURLException, URLShortener
+from shortener.utils.utils import User, REDIS_ADDRESS
 
 secretkey = "verysecret"
 storage_backend = (
@@ -30,22 +31,15 @@ shortener = URLShortener(storage_backend)
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-
+        user = User(request)
         token = request.values.get("token")
-
-        user_id = request.values.get("user_id")
-
         try:
-            data = jwt.decode(token, secretkey, audience=user_id, algorithms="HS256")
-
+            data = jwt.decode(token, secretkey, audience=user.user_id, algorithms="HS256")
         except jwt.DecodeError:
             return "DecodeError", 403
-
         except jwt.InvalidTokenError:
             return "Forbidden", 403
-
         return f(*args, **kwargs)
-
     return decorated
 
 
@@ -63,11 +57,12 @@ def set_entry(key):
     # NOTE: We assume that the PUT call is supposed to update the value for a key
     # This needs a parameter that is not in the table
     url = request.values.get("url")
-    user_id = request.values.get("user_id") or request.remote_addr
+    user = User(request)
+
     if url is None or len(url) < 1:
         return "missing url", 400
     try:
-        shortener.update(key, url, user_id=user_id)
+        shortener.update(key, url, user_id=user.user_id)
     except NotFoundException as e:
         return str(e), 404
     except InvalidURLException as e:
@@ -83,9 +78,9 @@ def set_entry(key):
 @app.route("/<key>", methods=["DELETE"])
 @token_required
 def delete_entry(key):
-    user_id = request.values.get("user_id") or request.remote_addr
+    user = User(request)
     try:
-        shortener.delete(key, user_id=user_id)
+        shortener.delete(key, user_id=user.user_id)
     except NotFoundException as e:
         return str(e), 404
     return "", 204
@@ -94,19 +89,19 @@ def delete_entry(key):
 @app.route("/", methods=["GET"])
 @token_required
 def get_all_entries():
-    user_id = request.values.get("user_id") or request.remote_addr
-    return jsonify(shortener.get_all(user_id=user_id)), 200
+    user = User(request)
+    return jsonify(shortener.get_all(user_id=user.user_id)), 200
 
 
 @app.route("/", methods=["POST"])
 @token_required
 def add_new_entry():
-    user_id = request.values.get("user_id") or request.remote_addr
+    user = User(request)
     url = request.values.get("url")
     if url is None or len(url) < 1:
         return "missing url", 400
     try:
-        return shortener.add(url, user_id=user_id), 201
+        return shortener.add(url, user_id=user.user_id), 201
     except (InvalidURLException, AlreadyExistsException) as e:
         return str(e), 400
 
@@ -114,7 +109,7 @@ def add_new_entry():
 @app.route("/", methods=["DELETE"])
 @token_required
 def delete_all_entries():
-    user_id = request.values.get("user_id") or request.remote_addr
+    user = User(request)
     url = request.values.get("url")
-    shortener.delete_all(user_id=user_id)
+    shortener.delete_all(user_id=user.user_id)
     return "", 204

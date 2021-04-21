@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: shortener
-        image: localhost:32000/python-url-shortener:registry
+        image: localhost:32000/shortener:registry
         ports:
         - containerPort: 5000
         env:
