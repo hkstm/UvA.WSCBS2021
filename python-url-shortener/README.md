@@ -44,6 +44,29 @@ or, if needed:
 sudo ./update_services.sh 
 ```
 
+#### Usage
+Launching a kiali dashboard by doing:
+```bash
+istioctl dashboard kiali
+```
+And logging in with admin:admin gives you a dashboard to keep track of the location, health and some other stuff of the services.
+
+Checking:
+```bash
+kubectl get deploy
+```
+Should show 1 of both authentication-deployment and shortener-deployment. If you then do:
+```bash
+kubectl autoscale deployment shortener-deployment  --cpu-percent=50 --min=2 --max=10
+```
+Wait a bit and do:
+```bash
+kubectl get deploy
+```
+Again you should see that there are no 2 pods that belong to the shortener-deployment/service.
+
+The authentication service can in general be reached by using http://someadressorip:/auth, while everything else e.g. http://someadressorip:/ is routed to the shortener service. This is defined in python-url-shortener/k8s/ingress.yaml.
+
 #### Examples (TODO: Add Authentication steps)
 
 ```bash
