@@ -1,18 +1,20 @@
 import os
 from functools import wraps
-from flask import jsonify, request
-import jwt
 
+import jwt
 import jwt.exceptions
-from python_url_shortener.app import app
-from python_url_shortener.kvstore import (
+from flask import jsonify, request
+
+from shortener.app import app
+from shortener.kvstore import (
     AlreadyExistsException,
     InMemoryKeyValueStore,
+    MissingTokenException,
     NotFoundException,
     PersistentKeyValueStore,
-    MissingTokenException,
 )
-from python_url_shortener.shortener import InvalidURLException, URLShortener
+from shortener.shortener import InvalidURLException, URLShortener
+from shortener.utils.utils import User, REDIS_ADDRESS
 
 secretkey = "verysecret"
 storage_backend = (
@@ -43,7 +45,6 @@ def token_required(f):
         except Exception as e:
             print(e)
             return "internal error", 500
-
         return f(*args, user_id=data.get("username"), **kwargs)
 
     return decorated
@@ -63,6 +64,7 @@ def set_entry(key, user_id=None):
     # NOTE: We assume that the PUT call is supposed to update the value for a key
     # This needs a parameter that is not in the table
     url = request.values.get("url")
+
     if url is None or len(url) < 1:
         return "missing url", 400
     try:

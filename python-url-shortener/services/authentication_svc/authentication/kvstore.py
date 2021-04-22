@@ -1,8 +1,6 @@
 from abc import ABC
 from collections import defaultdict
-
 import redis
-
 
 class KVStoreException(Exception):
     pass

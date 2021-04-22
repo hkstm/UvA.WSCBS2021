@@ -2,7 +2,7 @@ import hashlib
 
 import validators
 
-from python_url_shortener.kvstore import AlreadyExistsException, InMemoryKeyValueStore
+from shortener.kvstore import AlreadyExistsException, InMemoryKeyValueStore
 
 
 class URLShortenerException(Exception):

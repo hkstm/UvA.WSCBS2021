@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentication-deployment
+  labels:
+    app: authentication
+spec:
+  selector:
+    matchLabels:
+      app: authentication
+  template:
+    metadata:
+      labels:
+        app: authentication
+    spec:
+      containers:
+      - name: authentication
+        image: localhost:32000/authentication:registry
+        ports:
+        - containerPort: 5000
+        env:
+        - name: REDIS_ADDRESS
+          value: "redis"
+        - name: PERSIST
+          value: "yes"
+        - name: CLEAN_DATABASE
+          value: "yes"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentication-service
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app: authentication
+  type: ClusterIP

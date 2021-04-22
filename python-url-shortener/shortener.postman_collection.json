@@ -1,0 +1,156 @@
+{
+	"info": {
+		"_postman_id": "836fd319-ee36-4b7e-90fe-86f53fd9aa23",
+		"name": "shortener",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create_user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://10.64.140.43/auth/users?username=username&password=password",
+					"protocol": "http",
+					"host": [
+						"10",
+						"64",
+						"140",
+						"43"
+					],
+					"path": [
+						"auth",
+						"users"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "username"
+						},
+						{
+							"key": "password",
+							"value": "password"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "validate_user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://10.64.140.43/auth/login?username=username&password=password",
+					"protocol": "http",
+					"host": [
+						"10",
+						"64",
+						"140",
+						"43"
+					],
+					"path": [
+						"auth",
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "username"
+						},
+						{
+							"key": "password",
+							"value": "password"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_entry",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://10.64.140.43/1",
+					"protocol": "http",
+					"host": [
+						"10",
+						"64",
+						"140",
+						"43"
+					],
+					"path": [
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "set_entry",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://10.64.140.43/2?url=https://google.com&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxMjcuMC4wLjEifQ.imPsOvbS88Yp7FcHKa5aTbCHgtW5_33Q6P4jqYuzoyQ",
+					"protocol": "http",
+					"host": [
+						"10",
+						"64",
+						"140",
+						"43"
+					],
+					"path": [
+						"2"
+					],
+					"query": [
+						{
+							"key": "url",
+							"value": "https://google.com"
+						},
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxMjcuMC4wLjEifQ.imPsOvbS88Yp7FcHKa5aTbCHgtW5_33Q6P4jqYuzoyQ"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add_new_entry",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://10.64.140.43/?url=https://wikipedia.com&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxMjcuMC4wLjEifQ.imPsOvbS88Yp7FcHKa5aTbCHgtW5_33Q6P4jqYuzoyQ",
+					"protocol": "http",
+					"host": [
+						"10",
+						"64",
+						"140",
+						"43"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "url",
+							"value": "https://wikipedia.com"
+						},
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxMjcuMC4wLjEifQ.imPsOvbS88Yp7FcHKa5aTbCHgtW5_33Q6P4jqYuzoyQ"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

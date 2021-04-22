@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shortener-deployment
+  labels:
+    app: shortener
+spec:
+  selector:
+    matchLabels:
+      app: shortener
+  template:
+    metadata:
+      labels:
+        app: shortener
+    spec:
+      containers:
+      - name: shortener
+        image: localhost:32000/shortener:registry
+        ports:
+        - containerPort: 5000
+        env:
+        - name: REDIS_ADDRESS
+          value: "redis"
+        - name: PERSIST
+          value: "yes"
+        - name: CLEAN_DATABASE
+          value: "yes"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shortener-service
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app: shortener
+  type: ClusterIP
