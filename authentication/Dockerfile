@@ -1,8 +1,6 @@
-FROM tiangolo/uwsgi-nginx-flask:python3.8
+FROM tiangolo/uwsgi-nginx-flask:python3.8-alpine
 
-# do not remove these comments please, as we will probably go back to use alpine once the base container gets updated
-# RUN apk --no-cache update
-# RUN apk add --no-cache --update gcc rust cargo python3-dev libressl-dev musl-dev libffi-dev
+RUN apk add --update alpine-sdk
 WORKDIR /app
 ADD . /app
 RUN pip install --upgrade pip pipenv

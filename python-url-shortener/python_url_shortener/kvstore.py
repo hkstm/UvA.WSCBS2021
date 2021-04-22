@@ -93,9 +93,9 @@ class InMemoryKeyValueStore(KeyValueStore):
 class PersistentKeyValueStore(KeyValueStore):
     """ Redis based persistent key value store """
 
-    def __init__(self, address="localhost", clean=True):
-        self.db = redis.Redis(address, db=0)
-        self.users = redis.Redis(address, db=1)
+    def __init__(self, address="localhost", db=0, user_db=1, clean=True):
+        self.db = redis.Redis(address, db=db)
+        self.users = redis.Redis(address, db=user_db)
         if clean:
             print("cleaning the database")
             self.db.flushdb()

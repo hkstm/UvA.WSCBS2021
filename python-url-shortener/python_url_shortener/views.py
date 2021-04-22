@@ -10,18 +10,20 @@ from python_url_shortener.kvstore import (
     InMemoryKeyValueStore,
     NotFoundException,
     PersistentKeyValueStore,
-    MissingTokenException
-
+    MissingTokenException,
 )
 from python_url_shortener.shortener import InvalidURLException, URLShortener
+
 secretkey = "verysecret"
 storage_backend = (
     PersistentKeyValueStore(
-        address="localhost"
-        # clean=os.environ.get("CLEAN_DATABASE") is not None,
+        address=os.environ.get("REDIS_ADDRESS") or "localhost",
+        db=os.environ.get("REDIS_DATABASE", 0),
+        user_db=os.environ.get("REDIS_USER_DATABASE", 1),
+        clean=os.environ.get("CLEAN_DATABASE") is not None,
     )
-    # if os.environ.get("PERSIST")
-    # else InMemoryKeyValueStore()
+    if os.environ.get("PERSIST")
+    else InMemoryKeyValueStore()
 )
 shortener = URLShortener(storage_backend)
 
@@ -29,27 +31,22 @@ shortener = URLShortener(storage_backend)
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        
-        token = request.values.get('token')  
-       
-        user_id = request.values.get('user_id')
-
+        token = request.headers.get("x-access-token")
+        if token is None:
+            return "missing access token", 400
         try:
-            data = jwt.decode(token, secretkey, audience=user_id, algorithms="HS256")          
-            
-        
-        except jwt.DecodeError:
-            return "DecodeError", 403
+            data = jwt.decode(token, secretkey, algorithms="HS256")
+        except jwt.exceptions.DecodeError:
+            return "error", 403
+        except jwt.exceptions.InvalidTokenError as e:
+            return "forbidden", 403
+        except Exception as e:
+            print(e)
+            return "internal error", 500
 
-        except jwt.InvalidTokenError:
-            return "Forbidden", 403
+        return f(*args, user_id=data.get("username"), **kwargs)
 
-      
-        return f(*args, **kwargs)
-        
     return decorated
-
-
 
 
 @app.route("/<key>", methods=["GET"])
@@ -62,11 +59,10 @@ def get_entry(key):
 
 @app.route("/<key>", methods=["PUT"])
 @token_required
-def set_entry(key):
+def set_entry(key, user_id=None):
     # NOTE: We assume that the PUT call is supposed to update the value for a key
     # This needs a parameter that is not in the table
     url = request.values.get("url")
-    user_id = request.values.get("user_id") or request.remote_addr
     if url is None or len(url) < 1:
         return "missing url", 400
     try:
@@ -80,16 +76,12 @@ def set_entry(key):
     except MissingTokenException as e:
         return str(e), 403
 
-
     return "", 200
-
-
 
 
 @app.route("/<key>", methods=["DELETE"])
 @token_required
-def delete_entry(key):
-    user_id = request.values.get("user_id") or request.remote_addr
+def delete_entry(key, user_id=None):
     try:
         shortener.delete(key, user_id=user_id)
     except NotFoundException as e:
@@ -99,15 +91,13 @@ def delete_entry(key):
 
 @app.route("/", methods=["GET"])
 @token_required
-def get_all_entries():
-    user_id = request.values.get("user_id") or request.remote_addr
+def get_all_entries(user_id=None):
     return jsonify(shortener.get_all(user_id=user_id)), 200
 
 
 @app.route("/", methods=["POST"])
 @token_required
-def add_new_entry():
-    user_id = request.values.get("user_id") or request.remote_addr
+def add_new_entry(user_id=None):
     url = request.values.get("url")
     if url is None or len(url) < 1:
         return "missing url", 400
@@ -119,8 +109,7 @@ def add_new_entry():
 
 @app.route("/", methods=["DELETE"])
 @token_required
-def delete_all_entries():
-    user_id = request.values.get("user_id") or request.remote_addr
+def delete_all_entries(user_id=None):
     url = request.values.get("url")
     shortener.delete_all(user_id=user_id)
     return "", 204
