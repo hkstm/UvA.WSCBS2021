@@ -15,7 +15,7 @@ Path().expanduser()
 ROOT_DIR = Path(__file__).parent
 SETUP_FILE = ROOT_DIR.joinpath("setup.py")
 TEST_DIR = ROOT_DIR.joinpath("tests")
-SOURCE_DIR = ROOT_DIR.joinpath("python_url_shortener")
+SOURCE_DIR = ROOT_DIR.joinpath("authentication")
 TOX_DIR = ROOT_DIR.joinpath(".tox")
 COVERAGE_FILE = ROOT_DIR.joinpath(".coverage")
 COVERAGE_DIR = ROOT_DIR.joinpath("htmlcov")
@@ -45,7 +45,7 @@ def _delete_file(f):
     }
 )
 def start(
-    c, _open=False, debug=True, port=5000, clean=False, persist=False, redis="localhost"
+    c, _open=False, debug=True, port=6000, clean=False, persist=False, redis="localhost"
 ):
     """Start the flask server"""
     addr = "http://localhost:%d" % port
@@ -59,9 +59,7 @@ def start(
         command += "CLEAN_DATABASE=yes "
     if debug:
         command += "FLASK_DEBUG=1 FLASK_ENV=development "
-    c.run(
-        command + "FLASK_APP=python_url_shortener.app pipenv run flask run -p %d" % port
-    )
+    c.run(command + "FLASK_APP=authentication.app pipenv run flask run -p %d" % port)
 
 
 @task(help={"check": "Checks if source is formatted without applying changes"})

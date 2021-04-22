@@ -1,0 +1,48 @@
+version: "3.3"
+services:
+  traefik:
+    image: "traefik:v2.4"
+    container_name: "traefik"
+    command:
+      # - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  auth:
+    build: ./services/authentication_svc
+    container_name: "auth"
+    environment:
+      REDIS_ADDRESS: redis
+      REDIS_DATABASE: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=PathPrefix(`/users`)"
+      - "traefik.http.routers.auth.entrypoints=web"
+
+  shortener:
+    extends:
+      file: ./services/shortener_svc/docker-compose.yml
+      service: shortener
+    environment:
+      REDIS_ADDRESS: redis
+      REDIS_DATABASE: 0
+      REDIS_USER_DATABASE: 1
+    ports: []
+    container_name: "shortener"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.shortener.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.shortener.entrypoints=web"
+
+  redis:
+    extends:
+      file: ./services/shortener_svc/docker-compose.yml
+      service: redis
+    # ports: []

@@ -2,6 +2,9 @@
 
 This simple python service maps URLs to short keys. Users need to login first. We use `redis` as a database. It uses `microk8s`, `istio` and `helm`.
 
+#### TODO
+my-release-redis-master.default.svc.cluster.local
+
 #### Setup
 Follow steps on
 https://microk8s.io/
