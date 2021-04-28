@@ -7,7 +7,7 @@ import jwt
 
 import os
 
-secretkey = "verysecret"
+secretKey = os.environ.get("SECRET_KEY", "changeme")
 
 
 class Authentication:
@@ -17,7 +17,7 @@ class Authentication:
     def get(self, username, password):
         stored = self.kvstore.get(username)
         if stored is not None and stored == password:
-            return jwt.encode({"username": username}, secretkey, algorithm="HS256")
+            return jwt.encode({"username": username}, secretKey, algorithm="HS256")
         else:
             raise WrongPasswordException()
 

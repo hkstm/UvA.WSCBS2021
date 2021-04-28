@@ -1,0 +1,56 @@
+# Default values for url-shortener.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+redis:
+  enabled: true
+  fullnameOverride: url-shortener-redis
+  auth:
+    enabled: false
+    # password: ""
+        
+  master:
+    # by default, FLUSHDB and FLUSHALL are disabled
+    disableCommands: []
+    persistence:
+      enabled: false
+
+  replica:
+    # by default, FLUSHDB and FLUSHALL are disabled
+    disableCommands: []
+    replicaCount: 1
+    persistence:
+      enabled: false
+
+  serviceAccount:
+    create: false
+
+authentication:
+  secretKey:
+    value: "changeme"
+
+  redis:
+    address: url-shortener-redis-master
+
+  ingress:
+    enabled: true
+    match:
+      - uri:
+          prefix: /users
+    gateways:
+      - url-shortener-gateway
+
+shortener:
+  secretKey:
+    value: "changeme"
+
+  redis:
+    address: url-shortener-redis-master
+
+  ingress:
+    enabled: true
+    match:
+      - uri:
+          prefix: /
+    gateways:
+      - url-shortener-gateway

@@ -20,6 +20,11 @@ storage_backend = PersistentKeyValueStore(
 authenticator = Authentication(storage_backend)
 
 
+@app.route("/health", methods=["GET"])
+def health_check():
+    return "healthy", 200
+
+
 @app.route("/users", methods=["POST"])
 def create_user():
     user = User(request)

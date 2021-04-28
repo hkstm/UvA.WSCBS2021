@@ -45,7 +45,7 @@ def _delete_file(f):
     }
 )
 def start(
-    c, _open=False, debug=True, port=6000, clean=False, persist=False, redis="localhost"
+    c, _open=False, debug=True, port=4000, clean=False, persist=False, redis="localhost"
 ):
     """Start the flask server"""
     addr = "http://localhost:%d" % port

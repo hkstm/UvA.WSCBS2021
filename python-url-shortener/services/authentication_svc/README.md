@@ -5,10 +5,10 @@
 docker-compose up
 
 # create a sample user
-curl -X POST -d "username=test" -d "password=123" localhost/users # or localhost:6000
+curl -X POST -d "username=test" -d "password=123" localhost/users # or localhost:4000
 
 # login the user to get a JWT token
-curl -X POST -d "username=test" -d "password=123" localhost/users/login # or localhost:6000
+curl -X POST -d "username=test" -d "password=123" localhost/users/login # or localhost:4000
 
 # without an access token, access to the shortened urls is not granted
 curl -X GET localhost # or localhost:5000
