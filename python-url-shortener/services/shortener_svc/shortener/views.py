@@ -31,7 +31,7 @@ storage_backend = (
 shortener = URLShortener(storage_backend)
 
 
-def token_required(f):
+def require_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get("x-access-token")
@@ -65,7 +65,7 @@ def get_entry(key):
 
 
 @app.route("/<key>", methods=["PUT"])
-@token_required
+@require_auth
 def set_entry(key, user_id=None):
     # NOTE: We assume that the PUT call is supposed to update the value for a key
     # This needs a parameter that is not in the table
@@ -88,7 +88,7 @@ def set_entry(key, user_id=None):
 
 
 @app.route("/<key>", methods=["DELETE"])
-@token_required
+@require_auth
 def delete_entry(key, user_id=None):
     try:
         shortener.delete(key, user_id=user_id)
@@ -98,13 +98,13 @@ def delete_entry(key, user_id=None):
 
 
 @app.route("/", methods=["GET"])
-@token_required
+@require_auth
 def get_all_entries(user_id=None):
     return jsonify(shortener.get_all(user_id=user_id)), 200
 
 
 @app.route("/", methods=["POST"])
-@token_required
+@require_auth
 def add_new_entry(user_id=None):
     url = request.values.get("url")
     if url is None or len(url) < 1:
@@ -116,7 +116,7 @@ def add_new_entry(user_id=None):
 
 
 @app.route("/", methods=["DELETE"])
-@token_required
+@require_auth
 def delete_all_entries(user_id=None):
     url = request.values.get("url")
     shortener.delete_all(user_id=user_id)
