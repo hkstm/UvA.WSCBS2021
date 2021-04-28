@@ -14,7 +14,7 @@ from shortener.kvstore import (
     PersistentKeyValueStore,
 )
 from shortener.shortener import InvalidURLException, URLShortener
-from shortener.utils.utils import User, REDIS_ADDRESS
+from shortener.utils.utils import REDIS_ADDRESS, User
 
 secretKey = os.environ.get("SECRET_KEY", "changeme")
 

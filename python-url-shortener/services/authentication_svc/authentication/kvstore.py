@@ -1,14 +1,16 @@
 from abc import ABC
 from collections import defaultdict
+
 import redis
+
 
 class KVStoreException(Exception):
     pass
 
 
-class WrongPasswordException(KVStoreException):
-      def __init__(self):
-        super().__init__("Wrong password")
+class InvalidCredentialsException(KVStoreException):
+    def __init__(self):
+        super().__init__("forbidden")
 
 
 class NotFoundException(KVStoreException):
@@ -29,7 +31,7 @@ class KeyValueStore(ABC):
 
     def get(self, key):
         pass
-    
+
 
 class InMemoryKeyValueStore(KeyValueStore):
     """ In memory key value store """
@@ -45,6 +47,7 @@ class InMemoryKeyValueStore(KeyValueStore):
 
     def get(self, key):
         return self.data.get(key)
+
 
 class PersistentKeyValueStore(KeyValueStore):
     """ Redis based persistent key value store """

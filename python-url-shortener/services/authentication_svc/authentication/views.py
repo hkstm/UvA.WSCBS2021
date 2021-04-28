@@ -1,15 +1,13 @@
 import os
 
-from flask import jsonify, request, render_template, app, Blueprint
+from flask import Blueprint, app, jsonify, render_template, request
+
 from authentication.app import app
-from authentication.kvstore import (
-    AlreadyExistsException,
-    WrongPasswordException,
-    NotFoundException,
-    PersistentKeyValueStore,
-)
 from authentication.authentication import Authentication
-from authentication.utils.utils import User, REDIS_ADDRESS
+from authentication.kvstore import (AlreadyExistsException,
+                                    InvalidCredentialsException,
+                                    NotFoundException, PersistentKeyValueStore)
+from authentication.utils.utils import REDIS_ADDRESS, User
 
 storage_backend = PersistentKeyValueStore(
     address=os.environ.get("REDIS_ADDRESS", "localhost"),
@@ -48,7 +46,7 @@ def validate_user():
         jwt_token = authenticator.get(user.username, user.password)
     except NotFoundException as e:
         return str(e), 403
-    except WrongPasswordException as e:
+    except InvalidCredentialsException as e:
         return str(e), 403
     except Exception as e:
         print("unexpected error:", str(e))
