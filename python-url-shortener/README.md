@@ -1,18 +1,29 @@
-#### Python URL Shortener
+## Python URL Shortener
 
-This simple python service maps URLs to short keys. Users need to login first. We use `redis` as a database. It uses `microk8s`, `istio` and `helm`.
+This simple python service maps URLs to short keys. Users need to login first. We use `redis` as a database and provide two deployment models:
+- A simple `docker-compose` based deployment that used `traefik` as a reverse proxy
+- A production deploymemt including load balancing and autoscaling using `microk8s`, `istio` and `helm`.
 
-#### Deployment via Helm
+
+### Docker based deployment
+To begin with, we provide a simple deployment using `docker-compose` and a reverse proxy that can be used as follows:
+
 ```bash
-helm dependency update helm/url-shortener
+docker-compose up
+docker-compose down # stops the containers
 ```
 
-#### Setup
-Follow steps on
-https://microk8s.io/
-To install microk8s
-You could probably use something like minikube/k3s as well but dunno how to set that up. Make sure to install MicroK8s 1.21 (stable) otherwise your helm3 will not be able to install certain charts (like Redis at least).
+Note that the configuratin of the `traefik` reverse proxy is done via docker labels that route all requests prefixed with `/users` to the authentication service and all other requests to the url shortener service.
 
+
+### K8s service mesh deployment
+
+#### Setup microk8s
+While it is possible to use any k8s cluster, we use the very straight forward approach using microk8s, which is available for linux, mac, and windows.
+
+**Note**: We assume you are running linux. In principle, the deployment works using mac as well, except for MetalLB due to ARPing issues in the micro8ks multipass VM.
+
+First, install the most recent version of microk8s and enable the addons we will use:
 ```bash
 sudo snap install microk8s --classic --channel=1.21/stable
 microk8s status --wait-ready
@@ -20,15 +31,19 @@ microk8s enable dashboard dns registry istio helm3
 microk8s enable metallb:10.64.140.43-10.64.140.49
 ```
 
-#### Docker based deployment
+We will use istio as our service mesh, which requires to inject sidecar proxies along our services:
 ```bash
-docker-compose up
+microk8s kubectl label namespace default istio-injection=enabled --overwrite
+# verify that injection is enabled for the "default" k8s namepace
+microk8s kubectl get namespace -L istio-injection
 ```
 
-#### K8s service mesh deployment
+#### Deployment of the helm chart
 
+We provide a script to build all required service containers, push them into the microk8s docker container registry and perform a helm update of the chart:
 ```bash
 ./update_services.sh 
+
 # to skip rebuilding the containers, you can also run
 SKIPBUILD=1 ./update_services.sh 
 
@@ -36,29 +51,26 @@ SKIPBUILD=1 ./update_services.sh
 helm delete url-shortener --kubeconfig ./microk8s.kubeconfig
 ```
 
-#### Usage
+### View the service graph
 Launching a kiali dashboard by doing:
 ```bash
 microk8s istioctl dashboard kiali
 ```
 And logging in with admin:admin gives you a dashboard to keep track of the location, health and some other stuff of the services.
+We recommend trying out the graph view on the default namespace that shows a graph view of the microservices and the redis database.
 
-Checking:
+### Scale the microservices
+Both microservices are automatically scaled using a horizontal pod autoscaler, however, it is also possible to demonstrate the autoscaling manually. First, we check how many pods there are for the two microservice deployments:
 ```bash
 microk8s kubectl get deploy
 ```
-Should show 1 of both authentication-deployment and shortener-deployment. If you then do:
+This command should show 1 READY pod for the `url-shortener-authentication` and `url-shortener` deployment each. Scaling one of the services is as easy as:
 ```bash
-microk8s kubectl Autoscale deployment shortener-deployment  --cpu-percent=50 --min=2 --max=10
+microk8s kubectl autoscale deployment url-shortener --cpu-percent=50 --min=2 --max=10
 ```
-Wait a bit and do:
-```bash
-microk8s kubectl get deploy
-```
-Again you should see that there are no 2 pods that belong to the shortener-deployment/service.
+After some time, you can run the first command again to verify that the url-shortener service was indeed scaled to at least two pods. 
 
-All requests with a URL prefix /users are routed to the authentication service while all other requests are routed to the url shortener service.
-
+### Access the kubernets dashboard
 You can also check the k8s deployment using the kubernetes dashboard:
 ```bash
 # run this command in a separate tab or use tmux or something
@@ -66,6 +78,8 @@ microk8s dashboard-proxy
 # You can access the k8s dashboard at https://localhost:10443 or https://$MICROK8S_IP:10443 on mac
 echo "MICROK8S_IP is $(multipass info microk8s-vm | grep IPv4 | awk '{ print $2 }')"
 ```
+
+Note: Because of the self signed certificates, I had to use Firefox to use the dashboard.
 
 #### Examples (TODO: Add Authentication steps)
 
