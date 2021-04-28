@@ -31,7 +31,7 @@ microk8s enable dashboard dns registry istio helm3
 microk8s enable metallb:10.64.140.43-10.64.140.49
 ```
 
-We will use istio as our service mesh, which requires to inject sidecar proxies along our services:
+We will use `istio` as our service mesh, which requires to inject sidecar proxies along our services:
 ```bash
 microk8s kubectl label namespace default istio-injection=enabled --overwrite
 # verify that injection is enabled for the "default" k8s namepace
@@ -51,6 +51,13 @@ SKIPBUILD=1 ./update_services.sh
 helm delete url-shortener --kubeconfig ./microk8s.kubeconfig
 ```
 
+Since we use `istio` as our service mesh that helps with microservice orchestration, we can access the url shortener service via the `istio-ingressgateway`. First, we must find the ClusterIP the ingress gateway service is running on using the following command:
+```bash
+microk8s kubectl get svc -o wide --all-namespaces | grep "istio-ingress" | awk '{ print $4 }'
+```
+The service should then be accessible on this IP address.
+
+
 ### View the service graph
 Launching a kiali dashboard by doing:
 ```bash
@@ -58,6 +65,7 @@ microk8s istioctl dashboard kiali
 ```
 And logging in with admin:admin gives you a dashboard to keep track of the location, health and some other stuff of the services.
 We recommend trying out the graph view on the default namespace that shows a graph view of the microservices and the redis database.
+
 
 ### Scale the microservices
 Both microservices are automatically scaled using a horizontal pod autoscaler, however, it is also possible to demonstrate the autoscaling manually. First, we check how many pods there are for the two microservice deployments:
@@ -70,6 +78,7 @@ microk8s kubectl autoscale deployment url-shortener --cpu-percent=50 --min=2 --m
 ```
 After some time, you can run the first command again to verify that the url-shortener service was indeed scaled to at least two pods. 
 
+
 ### Access the kubernets dashboard
 You can also check the k8s deployment using the kubernetes dashboard:
 ```bash
@@ -80,6 +89,7 @@ echo "MICROK8S_IP is $(multipass info microk8s-vm | grep IPv4 | awk '{ print $2 
 ```
 
 Note: Because of the self signed certificates, I had to use Firefox to use the dashboard.
+
 
 #### Examples (TODO: Add Authentication steps)
 

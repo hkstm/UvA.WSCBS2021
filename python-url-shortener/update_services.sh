@@ -53,8 +53,6 @@ helm upgrade url-shortener $CHART_DIR \
   --kubeconfig ${MICROK8S_KUBECONFIG} \
   --install --wait --atomic --force
 
-# deprecated:
-# start k8s resources
-# ls ./k8s/*.yaml | while read path; do microk8s kubectl apply -f ${path}; done;
-# restart existing deployments with (new) images
-# microk8s kubectl get deployments | awk '{print $1}' | tail -n +2 | while read x; do microk8s kubectl rollout restart "deployment/$x"; done;
+INGRESS_IP=$(microk8s kubectl get svc -o wide --all-namespaces | grep "istio-ingress" | awk '{ print $4 }')
+
+echo "the service will be available at http://${INGRESS_IP}"
