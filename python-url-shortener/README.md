@@ -24,7 +24,7 @@ The deployment model described in the following steps is more sophisticated and 
 #### Setup microk8s
 While it is possible to use any k8s cluster, we show a comparatively straight forward approach using `microk8s`, which is available for linux, mac, and windows.
 
-**Note**: We still assume you are running linux for the following commands. In principle, the deployment works using mac as well, except for MetalLB due to ARPing issues in the micro8ks multipass VM.
+**Note**: We still assume you are running linux for the following commands. In principle, the deployment works and was tested using macos as well, except that access via the ingress gateway is not as easy because the cluster runs in a virtual machine and we do not provide instructions for that.
 
 First, install the most recent version of microk8s and enable the addons we will use:
 ```bash
