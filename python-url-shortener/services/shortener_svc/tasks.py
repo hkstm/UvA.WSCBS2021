@@ -15,7 +15,7 @@ Path().expanduser()
 ROOT_DIR = Path(__file__).parent
 SETUP_FILE = ROOT_DIR.joinpath("setup.py")
 TEST_DIR = ROOT_DIR.joinpath("tests")
-SOURCE_DIR = ROOT_DIR.joinpath("python_url_shortener")
+SOURCE_DIR = ROOT_DIR.joinpath("shortener")
 TOX_DIR = ROOT_DIR.joinpath(".tox")
 COVERAGE_FILE = ROOT_DIR.joinpath(".coverage")
 COVERAGE_DIR = ROOT_DIR.joinpath("htmlcov")
@@ -60,7 +60,7 @@ def start(
     if debug:
         command += "FLASK_DEBUG=1 FLASK_ENV=development "
     c.run(
-        command + "FLASK_APP=python_url_shortener.app pipenv run flask run -p %d" % port
+        command + "FLASK_APP=shortener.app pipenv run flask run -p %d" % port
     )
 
 

@@ -6,6 +6,7 @@ services:
       - 127.0.0.1:5000:80
     environment:
       REDIS_ADDRESS: redis
+      SECRET_KEY: changeme
       PERSIST: "yes"
       CLEAN_DATABASE: "yes"
   redis:

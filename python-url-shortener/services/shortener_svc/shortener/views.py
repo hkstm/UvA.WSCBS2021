@@ -16,7 +16,8 @@ from shortener.kvstore import (
 from shortener.shortener import InvalidURLException, URLShortener
 from shortener.utils.utils import User, REDIS_ADDRESS
 
-secretkey = "verysecret"
+secretKey = os.environ.get("SECRET_KEY", "changeme")
+
 storage_backend = (
     PersistentKeyValueStore(
         address=os.environ.get("REDIS_ADDRESS") or "localhost",
@@ -37,7 +38,7 @@ def token_required(f):
         if token is None:
             return "missing access token", 400
         try:
-            data = jwt.decode(token, secretkey, algorithms="HS256")
+            data = jwt.decode(token, secretKey, algorithms="HS256")
         except jwt.exceptions.DecodeError:
             return "error", 403
         except jwt.exceptions.InvalidTokenError as e:
@@ -48,6 +49,11 @@ def token_required(f):
         return f(*args, user_id=data.get("username"), **kwargs)
 
     return decorated
+
+
+@app.route("/health", methods=["GET"])
+def health_check():
+    return "healthy", 200
 
 
 @app.route("/<key>", methods=["GET"])
