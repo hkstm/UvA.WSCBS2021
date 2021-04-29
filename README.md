@@ -14,6 +14,6 @@ tar czf archive.tar.gz folder_to_copy
 ## Home Work 4 (Due 30 Apr at 23:59)
 [Canvas link](https://canvas.uva.nl/courses/21462/assignments/226656)
 
-[Paper](https://ieeexplore.ieee.org/document/7445407)
+[Paper](https://scihubtw.tw/10.1109/PDP.2016.75)
 
 [Home Work 4 Document](https://www.overleaf.com/4561172928psfzystjcjcc)
