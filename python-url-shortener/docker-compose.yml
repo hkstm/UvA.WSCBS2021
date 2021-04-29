@@ -28,23 +28,21 @@ services:
       - "traefik.http.routers.auth.entrypoints=web"
 
   shortener:
-    extends:
-      file: ./services/shortener_svc/docker-compose.yml
-      service: shortener
+    container_name: "shortener"
+    build: ./services/shortener_svc
     environment:
       REDIS_ADDRESS: redis
+      SECRET_KEY: changeme
+      PERSIST: "yes"
+      CLEAN_DATABASE: "yes"
       REDIS_DATABASE: 0
       REDIS_USER_DATABASE: 1
-      SECRET_KEY: changeme
-    ports: []
-    container_name: "shortener"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.shortener.rule=PathPrefix(`/`)"
       - "traefik.http.routers.shortener.entrypoints=web"
 
   redis:
-    extends:
-      file: ./services/shortener_svc/docker-compose.yml
-      service: redis
-    # ports: []
+    image: redis:alpine
+    ports:
+    - 6379:6379
