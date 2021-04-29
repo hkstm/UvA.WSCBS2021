@@ -1,5 +1,11 @@
 # UvA.WSCBS2021
 
+## How to submit?
+Just create a `tar`:
+```bash
+tar czf archive.tar.gz folder_to_copy
+```
+
 ## Home Work 3 (Due 24 Apr at 23:59)
 [Canvas link](https://canvas.uva.nl/courses/21462/assignments/226655)
 

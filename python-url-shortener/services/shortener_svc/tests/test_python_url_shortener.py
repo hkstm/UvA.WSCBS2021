@@ -7,7 +7,6 @@ import typing
 
 import pytest
 from click.testing import CliRunner
-
 from python_url_shortener import cli, python_url_shortener
 
 

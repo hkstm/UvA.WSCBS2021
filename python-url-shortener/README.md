@@ -10,6 +10,7 @@ To begin with, we provide a simple deployment using `docker-compose` and a rever
 
 ```bash
 docker-compose up
+# the auth and shortener services will be available on localhost/users and localhost respectively
 docker-compose down # stops the containers
 ```
 
@@ -18,10 +19,12 @@ Note that the configuratin of the `traefik` reverse proxy is done via docker lab
 
 ### K8s service mesh deployment
 
-#### Setup microk8s
-While it is possible to use any k8s cluster, we use the very straight forward approach using microk8s, which is available for linux, mac, and windows.
+The deployment model described in the following steps is more sophisticated and enables high scalability and good monitoring and traceability.
 
-**Note**: We assume you are running linux. In principle, the deployment works using mac as well, except for MetalLB due to ARPing issues in the micro8ks multipass VM.
+#### Setup microk8s
+While it is possible to use any k8s cluster, we show a comparatively straight forward approach using `microk8s`, which is available for linux, mac, and windows.
+
+**Note**: We still assume you are running linux for the following commands. In principle, the deployment works and was tested using macos as well, except that access via the ingress gateway is not as easy because the cluster runs in a virtual machine and we do not provide instructions for that.
 
 First, install the most recent version of microk8s and enable the addons we will use:
 ```bash
@@ -38,7 +41,7 @@ microk8s kubectl label namespace default istio-injection=enabled --overwrite
 microk8s kubectl get namespace -L istio-injection
 ```
 
-#### Deployment of the helm chart
+#### Deployment using helm
 
 We provide a script to build all required service containers, push them into the microk8s docker container registry and perform a helm update of the chart:
 ```bash
@@ -51,23 +54,21 @@ SKIPBUILD=1 ./update_services.sh
 helm delete url-shortener --kubeconfig ./microk8s.kubeconfig
 ```
 
-Since we use `istio` as our service mesh that helps with microservice orchestration, we can access the url shortener service via the `istio-ingressgateway`. First, we must find the ClusterIP the ingress gateway service is running on using the following command:
-```bash
-microk8s kubectl get svc -o wide --all-namespaces | grep "istio-ingress" | awk '{ print $4 }'
-```
-The service should then be accessible on this IP address.
+Since we use `istio` as our service mesh that helps with microservice orchestration, we can access the url shortener service via the `istio-ingressgateway`. The IP of the ingress gateway, where the service will be accessible, is printed at the end of the script.
 
 
 ### View the service graph
-Launching a kiali dashboard by doing:
+
+`Kiali` is a part of the `istio` service mesh and can be used to gain an overview of a microservice architecture. You can launch a `kiali` dashboard by running:
 ```bash
 microk8s istioctl dashboard kiali
 ```
-And logging in with admin:admin gives you a dashboard to keep track of the location, health and some other stuff of the services.
+After logging in with `admin:admin` gives you a dashboard to keep track of the location, health and some other metrics of the microservices.
 We recommend trying out the graph view on the default namespace that shows a graph view of the microservices and the redis database.
 
 
 ### Scale the microservices
+
 Both microservices are automatically scaled using a horizontal pod autoscaler, however, it is also possible to demonstrate the autoscaling manually. First, we check how many pods there are for the two microservice deployments:
 ```bash
 microk8s kubectl get deploy
@@ -76,19 +77,22 @@ This command should show 1 READY pod for the `url-shortener-authentication` and 
 ```bash
 microk8s kubectl autoscale deployment url-shortener --cpu-percent=50 --min=2 --max=10
 ```
-After some time, you can run the first command again to verify that the url-shortener service was indeed scaled to at least two pods. 
+After some time, you can run the first command again to verify that the url-shortener service was indeed scaled to load balance between at least two READY pods. 
 
 
 ### Access the kubernets dashboard
+
 You can also check the k8s deployment using the kubernetes dashboard:
 ```bash
-# run this command in a separate tab or use tmux or something
+# run this command in the background (e.g. a separate tab or something like tmux)
 microk8s dashboard-proxy
-# You can access the k8s dashboard at https://localhost:10443 or https://$MICROK8S_IP:10443 on mac
+# You can access the k8s dashboard at https://localhost:10443
+
+# If you are running mac, you have to access https://$MICROK8S_IP:10443, where $MICROK8S_IP can be found using below command
 echo "MICROK8S_IP is $(multipass info microk8s-vm | grep IPv4 | awk '{ print $2 }')"
 ```
 
-Note: Because of the self signed certificates, I had to use Firefox to use the dashboard.
+Note: Because of the self signed certificates, Firefox is required to access the dashboard.
 
 
 #### Examples (TODO: Add Authentication steps)
