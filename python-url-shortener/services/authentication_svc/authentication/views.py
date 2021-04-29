@@ -52,4 +52,4 @@ def validate_user():
         print("unexpected error:", str(e))
         return "error", 500
 
-    return jsonify(jwt_token), 200
+    return jwt_token, 200

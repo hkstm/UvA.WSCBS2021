@@ -95,53 +95,70 @@ echo "MICROK8S_IP is $(multipass info microk8s-vm | grep IPv4 | awk '{ print $2 
 Note: Because of the self signed certificates, Firefox is required to access the dashboard.
 
 
-#### Examples (TODO: Add Authentication steps)
+#### Example
 
+The example calls below assume you started the application via
 ```bash
-# add a new URL
-curl -i -X POST -d 'url=https://wikipedia.com' localhost:5000
+docker-compose up --build
+```
+Otherwise, the shortener service would run on `localhost:5000` and the authentication service would run on `localhost:4000`.
+
+Consider these sample interactions:
+```bash
+# adding a new URL will not work without an authentication token
+curl -i -X POST -d 'url=https://wikipedia.com' localhost
+
+# therefore, we must first create two sample users
+curl -X POST -d "username=alice" -d "password=123" localhost/users
+curl -X POST -d "username=bob" -d "password=123" localhost/users
+
+# login the newly created users to get a JWT token
+export TOKEN_ALICE=$(curl --silent -X POST -d "username=alice" -d "password=123" localhost/users/login)
+export TOKEN_BOB=$(curl --silent -X POST -d "username=bob" -d "password=123" localhost/users/login)
+echo "alice's auth token is: $TOKEN_ALICE"
+echo "bob's auth token is: $TOKEN_BOB"
+
+# if you provide a wrong username/password, no token is returned
+curl -X POST -d "username=test" -d "password=wrong" localhost/users/login
+
+# add a new URL with the authentication token of alice
+curl -i -H "x-access-token: $TOKEN_ALICE" -X POST -d 'url=https://wikipedia.com' localhost
 
 # add an invalid URL
-curl -i -X POST -d 'url=https://wikipedia' localhost:5000
+curl -i -H "x-access-token: $TOKEN_ALICE" -X POST -d 'url=https://wikipedia' localhost
 
-# view all current keys
-curl -i -X GET localhost:5000
+# view all current keys for alice
+curl -i -H "x-access-token: $TOKEN_ALICE" -X GET localhost
+
+# note that since alice added the link to wikipedia and not bob, he cannot see the link of alice
+curl -i -H "x-access-token: $TOKEN_BOB" -X GET localhost
 
 # view that the key points to wikipedia
-curl -i -X GET localhost:5000/2
+curl -i -H "x-access-token: $TOKEN_ALICE" -X GET localhost/2
 
 # view a nonexistent key
-curl -i -X GET localhost:5000/4abc
+curl -i -H "x-access-token: $TOKEN_ALICE" -X GET localhost/4abc
 
 # change the URL the key points to
-curl -i -X PUT -d 'url=https://google.com' localhost:5000/2
+curl -i -H "x-access-token: $TOKEN_ALICE" -X PUT -d 'url=https://google.com' localhost/2
 
 # change the URL of a nonexistent key
-curl -i -X PUT -d 'url=https://google.com' localhost:5000/6uw
+curl -i -H "x-access-token: $TOKEN_ALICE" -X PUT -d 'url=https://google.com' localhost/6uw
 
 # change the URL to an invalid URL
-curl -i -X PUT -d 'url=https://google' localhost:5000/2
+curl -i -H "x-access-token: $TOKEN_ALICE" -X PUT -d 'url=https://google' localhost/2
 
 # check that the key now points to google
-curl -i -X GET localhost:5000/2
+curl -i -H "x-access-token: $TOKEN_ALICE" -X GET localhost/2
 
 # delete the key
-curl -i -X DELETE localhost:5000/2
+curl -i -H "x-access-token: $TOKEN_ALICE" -X DELETE localhost/2
 
 # delete a key that does not exist
-curl -i -X DELETE localhost:5000/777
+curl -i -H "x-access-token: $TOKEN_ALICE" -X DELETE localhost/777
 
 # delete all the keys added by your IP address
-curl -i -X DELETE localhost:5000
-
-# use a different user id to shorten a URL
-curl -i -X POST -d 'user_id=testuser' -d 'url=https://wikipedia.com' localhost:5000
-
-# check that other users cannot see the shortened ID
-curl -i -X GET localhost:5000
-
-# check that the testuser can see (or delete) the ID
-curl -i -X GET 'localhost:5000/?user_id=testuser'
+curl -i -H "x-access-token: $TOKEN_ALICE" -X DELETE localhost
 ```
 
 #### Tests
