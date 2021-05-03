@@ -31,7 +31,6 @@ First, install the most recent version of microk8s and enable the addons we will
 sudo snap install microk8s --classic --channel=1.21/stable
 microk8s status --wait-ready
 microk8s enable dashboard dns registry istio helm3
-microk8s enable metallb:10.64.140.43-10.64.140.49
 ```
 
 We will use `istio` as our service mesh, which requires to inject sidecar proxies along our services:
@@ -62,7 +61,10 @@ Also, if you use macos, make sure to read the instruction outputted by the scrip
 
 `Kiali` is a part of the `istio` service mesh and can be used to gain an overview of a microservice architecture. You can launch a `kiali` dashboard by running:
 ```bash
+# on linux, run
 microk8s istioctl dashboard kiali
+
+# on macos, check the instructions outputted by update_services.sh script
 ```
 After logging in with `admin:admin` gives you a dashboard to keep track of the location, health and some other metrics of the microservices.
 We recommend trying out the graph view on the default namespace that shows a graph view of the microservices and the redis database.

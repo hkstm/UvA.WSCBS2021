@@ -10,6 +10,11 @@ set -e
 CHART_DIR='./helm/url-shortener'
 helm lint $CHART_DIR 
 
+# just to make sure microk8s is ready and istio sidejar injection is enabled
+microk8s status --wait-ready
+microk8s enable dashboard dns registry istio helm3
+microk8s kubectl label namespace default istio-injection=enabled --overwrite
+
 MICROK8S_IP="localhost"
 if [[ "$OSTYPE" == "darwin"* ]]; then
   MICROK8S_IP=$(multipass info microk8s-vm | grep "IPv4" | awk '{ print $2 }')
@@ -53,11 +58,21 @@ helm upgrade url-shortener $CHART_DIR \
   --kubeconfig ${MICROK8S_KUBECONFIG} \
   --install --wait --atomic --force
 
+echo ""
+echo "---------- done ---------"
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
   echo "since you are running on macos right now, you have to port forward the istio ingress out of the multipass VM that microk8s is running in."
   echo "to do this, run the following command in another tab or tmux screen: multipass exec microk8s-vm -- sudo /snap/bin/microk8s kubectl port-forward -n istio-system service/istio-ingressgateway 1080:80 --address 0.0.0.0"
   MICROK8S_IP=$(multipass info microk8s-vm | grep "IPv4" | awk '{ print $2 }')
   echo "the service will be available at http://${MICROK8S_IP}:1080"
+  echo ""
+
+  echo "----- kiali instructions ----"
+  echo "to access the kiali graph, run the following command in another tab or tmux screen: multipass exec microk8s-vm -- sudo /snap/bin/microk8s kubectl port-forward -n istio-system service/kiali 20001:20001 --address 0.0.0.0" 
+  echo "the kiali dashboard will be available at http://${MICROK8S_IP}:20001"
+  echo "use admin:admin as the initial credentials for login"
+
 else
   echo "the service will be available at http://${INGRESS_IP}"
 fi
