@@ -10,11 +10,11 @@ set -e
 CHART_DIR='./helm/url-shortener'
 helm lint $CHART_DIR 
 
-MICROK8S_REG="localhost"
+MICROK8S_IP="localhost"
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  MICROK8S_REG=$(multipass info microk8s-vm | grep "IPv4" | awk '{ print $2 }')
+  MICROK8S_IP=$(multipass info microk8s-vm | grep "IPv4" | awk '{ print $2 }')
 fi
-echo "Using microk8s docker registry at ${MICROK8S_REG}"
+echo "Using microk8s docker registry at ${MICROK8S_IP}"
 
 if [ -z "$SKIPBUILD" ]; then
   svcs=(./services/*)
@@ -24,7 +24,7 @@ if [ -z "$SKIPBUILD" ]; then
       path="${path##*/}"
       service="${path%_svc}"
       tag="${service}:registry"
-      container="${MICROK8S_REG}:32000/${tag}"
+      container="${MICROK8S_IP}:32000/${tag}"
       echo "Building ${service}_svc and pushing to ${container}"
 
       # remove existing images from registry
@@ -53,6 +53,13 @@ helm upgrade url-shortener $CHART_DIR \
   --kubeconfig ${MICROK8S_KUBECONFIG} \
   --install --wait --atomic --force
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  echo "since you are running on macos right now, you have to port forward the istio ingress out of the multipass VM that microk8s is running in."
+  echo "to do this, run the following command in another tab or tmux screen: multipass exec microk8s-vm -- sudo /snap/bin/microk8s kubectl port-forward -n istio-system service/istio-ingressgateway 1080:80 --address 0.0.0.0"
+  MICROK8S_IP=$(multipass info microk8s-vm | grep "IPv4" | awk '{ print $2 }')
+  echo "the service will be available at http://${MICROK8S_IP}:1080"
+else
+  echo "the service will be available at http://${INGRESS_IP}"
+fi
 INGRESS_IP=$(microk8s kubectl get svc -o wide --all-namespaces | grep "istio-ingress" | awk '{ print $4 }')
 
-echo "the service will be available at http://${INGRESS_IP}"

@@ -24,7 +24,7 @@ The deployment model described in the following steps is more sophisticated and 
 #### Setup microk8s
 While it is possible to use any k8s cluster, we show a comparatively straight forward approach using `microk8s`, which is available for linux, mac, and windows.
 
-**Note**: We still assume you are running linux for the following commands. In principle, the deployment works and was tested using macos as well, except that access via the ingress gateway is not as easy because the cluster runs in a virtual machine and we do not provide instructions for that.
+**Note**: We still assume you are running linux for the following commands. The deployment works and was tested using macos as well, however, it requires an extra step.
 
 First, install the most recent version of microk8s and enable the addons we will use:
 ```bash
@@ -55,6 +55,7 @@ helm delete url-shortener --kubeconfig ./microk8s.kubeconfig
 ```
 
 Since we use `istio` as our service mesh that helps with microservice orchestration, we can access the url shortener service via the `istio-ingressgateway`. The IP of the ingress gateway, where the service will be accessible, is printed at the end of the script.
+Also, if you use macos, make sure to read the instruction outputted by the script carefully.
 
 
 ### View the service graph
