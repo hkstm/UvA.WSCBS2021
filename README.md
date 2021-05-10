@@ -6,14 +6,12 @@ Just create a `tar`:
 tar czf archive.tar.gz folder_to_copy
 ```
 
-## Assignment 2: Micro service Architecture (Due 29 Apr at 23:59)
-[Canvas link](https://canvas.uva.nl/courses/21462/assignments/226649)
+## Assignment 3: Virtualization using containers (Docker) (Due 12 May at 23:59)
+[Canvas link](https://canvas.uva.nl/courses/21462/assignments/226650)
 
-[Assignment 2 Report](https://www.overleaf.com/1625365964qhysphdxqhnp)
+[Assignment 3 Report](https://www.overleaf.com/8378845995mvdfjndcjgkd)
 
-## Home Work 4 (Due 30 Apr at 23:59)
-[Canvas link](https://canvas.uva.nl/courses/21462/assignments/226656)
+## Assignment 5: Programming project (Due 4 Jun at 23:59)
+[Canvas link](https://canvas.uva.nl/courses/21462/assignments/229782)
 
-[Paper](https://scihubtw.tw/10.1109/PDP.2016.75)
-
-[Home Work 4 Document](https://www.overleaf.com/4561172928psfzystjcjcc)
+[Programming project Report](https://www.overleaf.com/9792538461mbkkmwvzfdgg)
