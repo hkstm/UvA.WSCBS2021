@@ -16,6 +16,11 @@ docker-compose down # stops the containers
 
 Note that the configuratin of the `traefik` reverse proxy is done via docker labels that route all requests prefixed with `/users` to the authentication service and all other requests to the url shortener service.
 
+### VM Setup
+You can ssh into the VMs after connecting to the UvA [vpn](https://student.uva.nl/en/content/az/uvavpn/download/download-uvavpn-software.html)
+Master: student09@145.100.129.9
+Slave: student10@145.100.129.10
+PW for both: uvahNae3ocieba
 
 ### K8s service mesh deployment
 
