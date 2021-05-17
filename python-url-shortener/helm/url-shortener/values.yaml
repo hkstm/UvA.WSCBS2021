@@ -26,6 +26,9 @@ redis:
     create: false
 
 authentication:
+  autoscaling:
+    minReplicas: 3
+
   secretKey:
     value: "changeme"
 
@@ -41,6 +44,9 @@ authentication:
       - url-shortener-gateway
 
 shortener:
+  autoscaling:
+    minReplicas: 3
+
   secretKey:
     value: "changeme"
 

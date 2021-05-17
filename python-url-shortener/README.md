@@ -29,7 +29,7 @@ The deployment model described in the following steps is more sophisticated and 
 #### Setup microk8s
 While it is possible to use any k8s cluster, we show a comparatively straight forward approach using `microk8s`, which is available for linux, mac, and windows.
 
-**Note**: We still assume you are running linux for the following commands. If you use macOS, use the multi-node deployment.
+**Note**: We still assume you are running linux for the following commands. If you use macOS, go straight to the multi-node deployment.
 
 First, install the most recent version of microk8s and enable the addons we will use:
 ```bash
@@ -73,7 +73,6 @@ helm delete url-shortener --kubeconfig ./.single-node-microk8s.kubeconfig.yml
 ```
 
 Since we use `istio` as our service mesh that helps with microservice orchestration, we can access the url shortener service via the `istio-ingressgateway`. The IP of the ingress gateway, where the service will be accessible, is printed at the end of the script.
-Also, if you use macos, make sure to read the instruction outputted by the script carefully.
 
 ### Multi node deployment
 
@@ -83,7 +82,7 @@ We also provide a multi node cluster setup to test out the application in a 3 no
 # we recommend to run this setup on a computer with at least 4 physical cores and 16GB RAM
 MULTINODE=yes ./update_services.sh 
 
-# If you run on macOS or don't want to start 3 nodes, you can specify the number of replicas as well
+# If you run on macOS or don't want to start 3 nodes, you can specify the number of replicas as well (default is 2)
 REPLICAS=0 MULTINODE=yes ./update_services.sh 
 ```
 
@@ -93,8 +92,6 @@ REPLICAS=0 MULTINODE=yes ./update_services.sh
 ```bash
 # on linux, run
 microk8s istioctl dashboard kiali
-
-# on macos, check the instructions outputted by update_services.sh script
 ```
 After logging in with `admin:admin` gives you a dashboard to keep track of the location, health and some other metrics of the microservices.
 We recommend trying out the graph view on the default namespace that shows a graph view of the microservices and the redis database.
@@ -111,22 +108,6 @@ This command should show 1 READY pod for the `url-shortener-authentication` and 
 microk8s kubectl autoscale deployment url-shortener --cpu-percent=50 --min=2 --max=10
 ```
 After some time, you can run the first command again to verify that the url-shortener service was indeed scaled to load balance between at least two READY pods. 
-
-
-### Access the kubernets dashboard
-
-You can also check the k8s deployment using the kubernetes dashboard:
-```bash
-# run this command in the background (e.g. a separate tab or something like tmux)
-microk8s dashboard-proxy
-# You can access the k8s dashboard at https://localhost:10443
-
-# If you are running mac, you have to access https://$MICROK8S_IP:10443, where $MICROK8S_IP can be found using below command
-echo "MICROK8S_IP is $(multipass info microk8s-vm | grep IPv4 | awk '{ print $2 }')"
-```
-
-Note: Because of the self signed certificates, Firefox is required to access the dashboard.
-
 
 #### Example
 
