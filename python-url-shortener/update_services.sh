@@ -6,23 +6,68 @@
 shopt -s nullglob
 set -e
 
+# change working directory to be the root
+cd "$(dirname "$0")/../"
+echo "working dir is $(pwd)"
+
+LINE="-----------------------------------"
+
 # lint and validate the chart before we build
-CHART_DIR='./helm/url-shortener'
+CHART_DIR='./python-url-shortener/helm/url-shortener'
+SVC_DIR='./python-url-shortener/services'
+UTILS_DIR='./python-url-shortener/utils'
 helm lint $CHART_DIR 
 
-# just to make sure microk8s is ready and istio sidejar injection is enabled
-microk8s status --wait-ready
-microk8s enable dashboard dns registry istio helm3
-microk8s kubectl label namespace default istio-injection=enabled --overwrite
+echo "$LINE"
+if [ -z "$MULTINODE" ]; then
+  # single node
+  echo "using single node local microk8s setup"
+  echo ""
+  echo "to run the application in a multinode cluster, run with MULTINODE=yes"
+  echo "note: this requires vagrant, virtualbox and a reasonably powerful computer"
+  echo "$LINE"
 
-MICROK8S_IP="localhost"
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  MICROK8S_IP=$(multipass info microk8s-vm | grep "IPv4" | awk '{ print $2 }')
+  MICROK8S_KUBECONFIG=".single-node-microk8s.kubeconfig.yml"
+  microk8s config > ${MICROK8S_KUBECONFIG}
+
+  # just to make sure microk8s is ready and istio sidejar injection is enabled
+  echo "setting up local microk8s"
+  microk8s start
+  microk8s inspect
+  microk8s status --wait-ready
+  microk8s enable dashboard dns registry istio helm3
+  microk8s kubectl label namespace default istio-injection=enabled --overwrite
+
+  MICROK8S_IP="localhost"
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "single node deployment using local microk8s is not supported for macOS"
+    echo "you can however use the multi-node deployment with a single node:"
+    echo ""
+    echo "REPLICAS=0 MULTINODE=yes ./update_services.sh"
+    exit 1
+  fi
+
+else
+  # multinode
+  echo "using the multi node k8s setup"
+  echo "$LINE"
+  MICROK8S_KUBECONFIG=".multi-node-microk8s.kubeconfig.yml"
+
+  # start the vagrant microk8s cluster
+  vagrant up
+  
+  # view the number of nodes in the cluster
+  kubectl --kubeconfig ${MICROK8S_KUBECONFIG} get no
+  MICROK8S_IP="192.168.50.10"
 fi
-echo "Using microk8s docker registry at ${MICROK8S_IP}"
 
+echo "$LINE"
+echo "Using microk8s docker registry at ${MICROK8S_IP}"
+echo "$LINE"
+
+# build and push docker service containers
 if [ -z "$SKIPBUILD" ]; then
-  svcs=(./services/*)
+  svcs=($SVC_DIR/*)
   for svc in "${svcs[@]}"; do
     if [[ -d "$svc" ]]; then
       path="${svc%/}"
@@ -33,16 +78,15 @@ if [ -z "$SKIPBUILD" ]; then
       echo "Building ${service}_svc and pushing to ${container}"
 
       # remove existing images from registry
-      # microk8s ctr images rm "${container}" || true
       images=($(microk8s ctr images ls | grep "localhost:32000/${service}" | awk '{print $1}'))
       for img in "${images[@]}"; do
         echo "removing image ${img}"
         microk8s ctr images rm ${img}
       done
       # copy utils
-      cp -r ./utils/ "./services/${service}_svc/${service}/"
+      cp -r "$UTILS_DIR" "$SVC_DIR/${service}_svc/${service}/"
       # build images
-      docker build -f "./services/${service}_svc/Dockerfile"  -t "${container}" "./services/${service}_svc/"
+      docker build -f "$SVC_DIR/${service}_svc/Dockerfile"  -t "${container}" "$SVC_DIR/${service}_svc/"
       # push images to registry
       docker push "${container}"
     fi
@@ -52,29 +96,57 @@ fi
 # update the deployment
 # because the chart we want to install is not in a chart repository but local only
 # we use the local helm and use the microk8s kubeconfig to access the cluster
-MICROK8S_KUBECONFIG="$(pwd)/microk8s.kubeconfig"
-microk8s config > ${MICROK8S_KUBECONFIG}
 helm upgrade url-shortener $CHART_DIR \
   --kubeconfig ${MICROK8S_KUBECONFIG} \
   --install --wait --atomic --force
 
 echo ""
-echo "---------- done ---------"
+echo "$LINE"
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  echo "since you are running on macos right now, you have to port forward the istio ingress out of the multipass VM that microk8s is running in."
-  echo "to do this, run the following command in another tab or tmux screen: multipass exec microk8s-vm -- sudo /snap/bin/microk8s kubectl port-forward -n istio-system service/istio-ingressgateway 1080:80 --address 0.0.0.0"
-  MICROK8S_IP=$(multipass info microk8s-vm | grep "IPv4" | awk '{ print $2 }')
-  echo "the service will be available at http://${MICROK8S_IP}:1080"
-  echo ""
+if [ -z "$MULTINODE" ]; then
+  # single node
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    echo "since you are running on macos right now, you have to port forward the istio ingress out of the multipass VM that microk8s is running in."
+    echo "to do this, run the following command in another tab or tmux screen:"
+    echo ""
+    echo "  multipass exec microk8s-vm -- sudo /snap/bin/microk8s kubectl port-forward -n istio-system service/istio-ingressgateway 1080:80 --address 0.0.0.0"
+    echo ""
+    MICROK8S_IP=$(multipass info microk8s-vm | grep "IPv4" | awk '{ print $2 }')
+    echo "the service will be available at http://${MICROK8S_IP}:1080"
+    echo ""
+    echo "$LINE"
+    echo "to access the kiali graph, run the following command in another tab or tmux screen:"
+    echo ""
+    echo "  multipass exec microk8s-vm -- sudo /snap/bin/microk8s kubectl port-forward -n istio-system service/kiali 20001:20001 --address 0.0.0.0" 
+    echo ""
+    echo "the kiali dashboard will be available at http://${MICROK8S_IP}:20001 (credentials are admin:admin)"
 
-  echo "----- kiali instructions ----"
-  echo "to access the kiali graph, run the following command in another tab or tmux screen: multipass exec microk8s-vm -- sudo /snap/bin/microk8s kubectl port-forward -n istio-system service/kiali 20001:20001 --address 0.0.0.0" 
-  echo "the kiali dashboard will be available at http://${MICROK8S_IP}:20001"
-  echo "use admin:admin as the initial credentials for login"
+  else
+    # linux
+    INGRESS_IP=$(kubectl --kubeconfig ${MICROK8S_KUBECONFIG} get svc -o wide --all-namespaces | grep "istio-ingress" | awk '{ print $4 }')
+    echo "the service will be available at http://${INGRESS_IP}"
+  fi
 
 else
-  echo "the service will be available at http://${INGRESS_IP}"
+  # multinode
+  echo "run the following command in another tab or tmux screen:"
+  echo ""
+  echo "  vagrant ssh k8s-main -c 'sudo /snap/bin/microk8s kubectl port-forward -n istio-system service/istio-ingressgateway 1080:80 --address 0.0.0.0'"
+  echo ""
+  echo "the service will be available at http://${MICROK8S_IP}:1080"
+  echo ""
+  echo "$LINE"
+  echo "to access the kiali graph, run the following command in another tab or tmux screen:"
+  echo ""
+  echo "  vagrant ssh k8s-main -c 'sudo /snap/bin/microk8s kubectl port-forward -n istio-system service/kiali 20001:20001 --address 0.0.0.0'" 
+  echo ""
+  echo "the kiali dashboard will be available at http://${MICROK8S_IP}:20001 (credentials are admin:admin)"
 fi
-INGRESS_IP=$(microk8s kubectl get svc -o wide --all-namespaces | grep "istio-ingress" | awk '{ print $4 }')
 
+echo ""
+echo "$LINE"
+echo "to uninstall the application from the cluster, run:"
+echo ""
+echo "  helm delete url-shortener --kubeconfig ${MICROK8S_KUBECONFIG}" 
+echo ""

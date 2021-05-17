@@ -15,6 +15,7 @@ touch ${VAGRANT_HOME}/.bashrc
 echo "export EDITOR=vim" >> ${VAGRANT_HOME}/.bashrc
 
 # install microk8s via snap
+snap install yq
 snap install docker
 snap install microk8s --classic --channel=1.21
 
