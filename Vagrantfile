@@ -7,14 +7,6 @@ REPLICAS = 2
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/focal64"
   config.vm.provision 'shell', path: 'provision-microk8s.sh'
-  # config.vm.network "public_network", bridge: "Intel(R) 82579LM Gigabit Network Connection"
-  # config.vm.network "public_network", use_dhcp_assigned_default_route: true
-  # config.vm.network 'forwarded_port', guest: 22,    host: 2166,  id: 'ssh',       host_ip: '127.0.0.1', auto_correct: true
-  # config.vm.network 'forwarded_port', guest: 80,    host: 8000,  id: 'ingress',   host_ip: '127.0.0.1', auto_correct: true
-  # config.vm.network 'forwarded_port', guest: 8080,  host: 8080,  id: 'apiserver', host_ip: '127.0.0.1', auto_correct: true
-  # config.vm.network 'forwarded_port', guest: 32000, host: 32000, id: 'registry',  host_ip: '127.0.0.1', auto_correct: true
-
-
   config.vm.provider "virtualbox" do |vb|
     vb.memory = 3072
     vb.cpus = 2
@@ -27,9 +19,6 @@ Vagrant.configure("2") do |config|
       vb.name = "k8s-main"
     end
 
-    # export LOCAL_IP="$(ip route | grep default | awk '{ print $9 }')"
-    # microk8s.add-node | grep $LOCAL_IP | tee /vagrant/.join-microk8s-cluster
-    
     main.vm.provision "shell", inline: <<-EOF
       microk8s.add-node --token-tt #{REPLICAS} | grep 192.168.50.10 | sed 's/^ //' > /vagrant/.join-microk8s-cluster
     EOF
