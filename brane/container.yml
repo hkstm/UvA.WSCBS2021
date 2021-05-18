@@ -34,6 +34,8 @@ actions:
       - type: string
         name: yval
       - type: string
+        name: modelname
+      - type: string
         name: eval_metric
       - type: integer
         name: max_depth
@@ -47,7 +49,3 @@ actions:
         name: colsample_bytree 
       - type: string
         name: objective
-    output:
-      - type: string
-        name: output
-

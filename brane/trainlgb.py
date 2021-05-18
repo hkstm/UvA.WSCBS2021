@@ -9,7 +9,7 @@ import os
 from lightgbm import LGBMClassifier
 
 #eval_metric: 
-def fit_lgb(Xtrain: str, ytrain: str, Xval: str, yval: str, eval_metric: int, max_depth: int, n_estimators:int, learning_rate: float, num_leaves: int, colsample_bytree: float, objective: str
+def fit_lgb(Xtrain: str, ytrain: str, Xval: str, yval: str, modelname: str, eval_metric: int, max_depth: int, n_estimators:int, learning_rate: float, num_leaves: int, colsample_bytree: float, objective: str
 ) -> str:
     Xtrain = pd.read_pickle(Xtrain)
     ytrain = pd.read_pickle(ytrain)
@@ -30,10 +30,10 @@ def fit_lgb(Xtrain: str, ytrain: str, Xval: str, yval: str, eval_metric: int, ma
                   verbose=100, early_stopping_rounds=100)
 
     
-    lgb.save_model('data/lgb_classifier.txt', num_iteration=lgb.best_iteration) 
+    lgb.save_model('data/{}.txt'.format(modelname), num_iteration=lgb.best_iteration) 
    
-    stringmodel = lgb.model_to_string()
-    return stringmodel
+  
+   
 
 
 if __name__ == "__main__":
