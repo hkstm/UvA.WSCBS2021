@@ -1,37 +1,53 @@
-name: base64
+name: train
 version: 1.0.0
 kind: compute
 
 dependencies:
   - python3
   - python3-yaml
+  - pip
+
+install:
+  - pip install lightgbm
+  - pip install pandas
+  - pip install numpy
 
 files:
-  - run.py
+  - preprocess.py
 
 entrypoint:
   kind: task
-  exec: run.py
+  exec: preprocess.py
 
 actions:
-  'decode':
+  'fit_lgb':
     command:
       args:
-        - decode
+        - fit_lgb
     input:
       - type: string
-        name: input
+        name: xtrain
+      - type: string
+        name: ytrain
+      - type: string
+        name: xval
+      - type: string
+        name: yval
+      - type: string
+        name: eval_metric
+      - type: integer
+        name: max_depth
+      - type: integer
+        name: n_estimators
+      - type: real
+        name: learning_rate
+      - type: integer
+        name: num_leaves
+      - type: real
+        name: colsample_bytree 
+      - type: string
+        name: objective
     output:
       - type: string
         name: output
 
-  'encode':
-    command:
-      args:
-        - encode     
-    input:
-      - type: string
-        name: input
-    output:
-      - type: string
-        name: output
