@@ -49,3 +49,7 @@ actions:
         name: colsample_bytree 
       - type: string
         name: objective
+
+    output:
+      - type: string
+        name: output

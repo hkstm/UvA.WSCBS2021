@@ -32,7 +32,7 @@ def fit_lgb(Xtrain: str, ytrain: str, Xval: str, yval: str, modelname: str, eval
     
     lgb.save_model('data/{}.txt'.format(modelname), num_iteration=lgb.best_iteration) 
    
-  
+    return "Model saved succesfully"
    
 
 
