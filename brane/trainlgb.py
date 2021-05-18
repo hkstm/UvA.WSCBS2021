@@ -16,7 +16,7 @@ def fit_lgb(Xtrain: str, ytrain: str, Xval: str, yval: str, eval_metric: int, ma
     Xval = pd.read_pickle(Xval)
     yval = pd.read_pickle(yval)
 
-    
+
     lgb = lgb.LGBMClassifier(max_depth=max_depth,
                                    n_estimators=n_estimators,
                                    learning_rate=learning_rate,
@@ -29,7 +29,9 @@ def fit_lgb(Xtrain: str, ytrain: str, Xval: str, yval: str, eval_metric: int, ma
                   eval_set=[(Xval, yval)], 
                   verbose=100, early_stopping_rounds=100)
 
-    # Save also on the FileSystem /data as pickle string
+    
+    lgb.save_model('data/lgb_classifier.txt', num_iteration=lgb.best_iteration) 
+   
     stringmodel = lgb.model_to_string()
     return stringmodel
 
