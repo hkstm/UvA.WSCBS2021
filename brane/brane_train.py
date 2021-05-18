@@ -1,12 +1,8 @@
 import lightgbm as lgb
 import pandas as pd
-import numpy as np
-from pandas import DataFrame
 import yaml
 import sys
 import os
-
-from lightgbm import LGBMClassifier
 
 #eval_metric: 
 def fit_lgb(Xtrain: str, ytrain: str, Xval: str, yval: str, modelname: str, eval_metric: int, max_depth: int, n_estimators:int, learning_rate: float, num_leaves: int, colsample_bytree: float, objective: str
