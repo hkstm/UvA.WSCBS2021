@@ -11,6 +11,12 @@ from lightgbm import LGBMClassifier
 #eval_metric: 
 def fit_lgb(Xtrain: str, ytrain: str, Xval: str, yval: str, eval_metric: int, max_depth: int, n_estimators:int, learning_rate: float, num_leaves: int, colsample_bytree: float, objective: str
 ) -> str:
+    Xtrain = pd.read_pickle(Xtrain)
+    ytrain = pd.read_pickle(ytrain)
+    Xval = pd.read_pickle(Xval)
+    yval = pd.read_pickle(yval)
+
+    
     lgb = lgb.LGBMClassifier(max_depth=max_depth,
                                    n_estimators=n_estimators,
                                    learning_rate=learning_rate,
