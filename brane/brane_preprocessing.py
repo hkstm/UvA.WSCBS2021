@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import yaml
 import sys
 import os
@@ -102,97 +104,92 @@ DTYPES = {
 
 #eval_metric: 
 def preprocessing(path_train: str, path_test: str):
-
-    ### loading as dataframe
-    logger.info('Loading Train and Test Data into dataframe')
-    train = pd.read_csv(path_train, dtype=DTYPES)
-    train['MachineIdentifier'] = train.index.astype('uint32')
     test  = pd.read_csv(path_test,  dtype=DTYPES)
     test['MachineIdentifier']  = test.index.astype('uint32')
 
     gc.collect()
 
-    ###
-    logger.info('Transform all features to category')
-    for usecol in train.columns.tolist()[1:-1]:
+#     ###
+#     logger.info('Transform all features to category')
+#     for usecol in train.columns.tolist()[1:-1]:
 
-        train[usecol] = train[usecol].astype('str')
-        test[usecol] = test[usecol].astype('str')
-        # doing this twice seems to fix the nans dont ask me why
-        train[usecol] = train[usecol].astype('str')
-        test[usecol] = test[usecol].astype('str')
+#         train[usecol] = train[usecol].astype('str')
+#         test[usecol] = test[usecol].astype('str')
+#         # doing this twice seems to fix the nans dont ask me why
+#         train[usecol] = train[usecol].astype('str')
+#         test[usecol] = test[usecol].astype('str')
 
-        #Fit LabelEncoder
-        le = LabelEncoder().fit(train[usecol].tolist()+test[usecol].tolist())
+#         #Fit LabelEncoder
+#         le = LabelEncoder().fit(train[usecol].tolist()+test[usecol].tolist())
 
-        #At the end 0 will be used for dropped values
-        train[usecol] = le.transform(train[usecol])+1
-        test[usecol]  = le.transform(test[usecol])+1
+#         #At the end 0 will be used for dropped values
+#         train[usecol] = le.transform(train[usecol])+1
+#         test[usecol]  = le.transform(test[usecol])+1
 
-        agg_tr = (train
-                .groupby([usecol])
-                .aggregate({'MachineIdentifier':'count'})
-                .reset_index()
-                .rename({'MachineIdentifier':'Train'}, axis=1))
-        agg_te = (test
-                .groupby([usecol])
-                .aggregate({'MachineIdentifier':'count'})
-                .reset_index()
-                .rename({'MachineIdentifier':'Test'}, axis=1))
+#         agg_tr = (train
+#                 .groupby([usecol])
+#                 .aggregate({'MachineIdentifier':'count'})
+#                 .reset_index()
+#                 .rename({'MachineIdentifier':'Train'}, axis=1))
+#         agg_te = (test
+#                 .groupby([usecol])
+#                 .aggregate({'MachineIdentifier':'count'})
+#                 .reset_index()
+#                 .rename({'MachineIdentifier':'Test'}, axis=1))
 
-        agg = pd.merge(agg_tr, agg_te, on=usecol, how='outer').replace(np.nan, 0)
-        #Select values with more than 1000 observations
-        agg = agg[(agg['Train'] > 1000)].reset_index(drop=True)
-        agg['Total'] = agg['Train'] + agg['Test']
-        #Drop unbalanced values
-        agg = agg[(agg['Train'] / agg['Total'] > 0.2) & (agg['Train'] / agg['Total'] < 0.8)]
-        agg[usecol+'Copy'] = agg[usecol]
+#         agg = pd.merge(agg_tr, agg_te, on=usecol, how='outer').replace(np.nan, 0)
+#         #Select values with more than 1000 observations
+#         agg = agg[(agg['Train'] > 1000)].reset_index(drop=True)
+#         agg['Total'] = agg['Train'] + agg['Test']
+#         #Drop unbalanced values
+#         agg = agg[(agg['Train'] / agg['Total'] > 0.2) & (agg['Train'] / agg['Total'] < 0.8)]
+#         agg[usecol+'Copy'] = agg[usecol]
 
-        train[usecol] = (pd.merge(train[[usecol]], 
-                                agg[[usecol, usecol+'Copy']], 
-                                on=usecol, how='left')[usecol+'Copy']
-                        .replace(np.nan, 0).astype('int').astype('category'))
+#         train[usecol] = (pd.merge(train[[usecol]], 
+#                                 agg[[usecol, usecol+'Copy']], 
+#                                 on=usecol, how='left')[usecol+'Copy']
+#                         .replace(np.nan, 0).astype('int').astype('category'))
 
-        test[usecol]  = (pd.merge(test[[usecol]], 
-                                agg[[usecol, usecol+'Copy']], 
-                                on=usecol, how='left')[usecol+'Copy']
-                        .replace(np.nan, 0).astype('int').astype('category'))
+#         test[usecol]  = (pd.merge(test[[usecol]], 
+#                                 agg[[usecol, usecol+'Copy']], 
+#                                 on=usecol, how='left')[usecol+'Copy']
+#                         .replace(np.nan, 0).astype('int').astype('category'))
 
-        del le, agg_tr, agg_te, agg, usecol
-        gc.collect()
+#         del le, agg_tr, agg_te, agg, usecol
+#         gc.collect()
             
-    y_train = np.array(train['HasDetections'])
-    train_ids = train.index
-    test_ids  = test.index
-    train_ids.to_series().to_pickle('data/_train_index.pkl')
-    test_ids.to_series().to_pickle('data/_test_index.pkl')
-    np.save('data/_train.npy', y_train)
+#     y_train = np.array(train['HasDetections'])
+#     train_ids = train.index
+#     test_ids  = test.index
+#     train_ids.to_series().to_pickle('data/_train_index.pkl')
+#     test_ids.to_series().to_pickle('data/_test_index.pkl')
+#     np.save('data/_train.npy', y_train)
 
-    del train['HasDetections'], train['MachineIdentifier'], test['MachineIdentifier']
-    gc.collect()
+#     del train['HasDetections'], train['MachineIdentifier'], test['MachineIdentifier']
+#     gc.collect()
 
-    logger.info("If you don't want use Sparse Matrix choose Kernel Version 2 to get simple solution.\n")
+#     logger.info("If you don't want use Sparse Matrix choose Kernel Version 2 to get simple solution.\n")
 
-    logger.info('--------------------------------------------------------------------------------------------------------')
-    logger.info('Transform Data to Sparse Matrix.')
-    logger.info('Sparse Matrix can be used to fit a lot of models, eg. XGBoost, LightGBM, Random Forest, K-Means and etc.')
-    logger.info('To concatenate Sparse Matrices by column use hstack()')
-    logger.info('Read more about Sparse Matrix https://docs.scipy.org/doc/scipy/reference/sparse.html')
-    logger.info('Good Luck!')
-    logger.info('--------------------------------------------------------------------------------------------------------')
+#     logger.info('--------------------------------------------------------------------------------------------------------')
+#     logger.info('Transform Data to Sparse Matrix.')
+#     logger.info('Sparse Matrix can be used to fit a lot of models, eg. XGBoost, LightGBM, Random Forest, K-Means and etc.')
+#     logger.info('To concatenate Sparse Matrices by column use hstack()')
+#     logger.info('Read more about Sparse Matrix https://docs.scipy.org/doc/scipy/reference/sparse.html')
+#     logger.info('Good Luck!')
+#     logger.info('--------------------------------------------------------------------------------------------------------')
 
-    #Fit OneHotEncoder
-    ohe = OneHotEncoder(categories='auto', sparse=True, dtype='uint8').fit(train)
+#     #Fit OneHotEncoder
+#     ohe = OneHotEncoder(categories='auto', sparse=True, dtype='uint8').fit(train)
 
-    #Transform data using small groups to reduce memory usage
-    m = 100000
-    train = vstack([ohe.transform(train[i*m:(i+1)*m]) for i in range(train.shape[0] // m + 1)])
-    test  = vstack([ohe.transform(test[i*m:(i+1)*m])  for i in range(test.shape[0] // m +  1)])
-    save_npz('data/_train.npz', train, compressed=True)
-    save_npz('data/_test.npz',  test,  compressed=True)
+#     #Transform data using small groups to reduce memory usage
+#     m = 100000
+#     train = vstack([ohe.transform(train[i*m:(i+1)*m]) for i in range(train.shape[0] // m + 1)])
+#     test  = vstack([ohe.transform(test[i*m:(i+1)*m])  for i in range(test.shape[0] // m +  1)])
+#     save_npz('data/_train.npz', train, compressed=True)
+#     save_npz('data/_test.npz',  test,  compressed=True)
 
-    del ohe, train, test
-    gc.collect()
+#     del ohe, train, test
+#     gc.collect()
     return "Preprocessed data"
 
 if __name__ == "__main__":

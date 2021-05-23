@@ -1,0 +1,33 @@
+name: train
+version: 1.0.0
+kind: compute
+
+dependencies:
+  - python3
+  - python3-yaml
+  - pip
+
+install:
+  - pip install lightgbm
+  - pip install pandas
+  - pip install numpy
+  - pip install scipy
+
+files:
+  - brane_predict.py
+
+entrypoint:
+  kind: task
+  exec: brane_predict.py
+
+actions:
+  'predict':
+    command:
+      args:
+        - predict
+    input:
+      - type: string
+        name: model_name
+    output:
+      - type: string
+        name: output

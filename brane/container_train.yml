@@ -11,13 +11,15 @@ install:
   - pip install lightgbm
   - pip install pandas
   - pip install numpy
+  - pip install scikit-learn
+  - pip install scipy
 
 files:
-  - preprocess.py
+  - brane_train.py
 
 entrypoint:
   kind: task
-  exec: preprocess.py
+  exec: brane_train.py
 
 actions:
   'fit_lgb':
@@ -25,6 +27,8 @@ actions:
       args:
         - fit_lgb
     input:
+      - type: string
+        name: model_name
       - type: string
         name: xtrain
       - type: string
