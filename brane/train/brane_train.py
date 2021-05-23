@@ -118,4 +118,4 @@ if __name__ == "__main__":
     # output = functions[command](xtrain, ytrain, xval, yval, eval_metric, max_depth, n_estimators, learning_rate, num_leaves, colsample_bytree, objective)
     output = functions[command](model_name, eval_metric, max_depth, n_estimators, learning_rate, num_leaves, colsample_bytree, objective)
 
-    logger.info(yaml.dump({"output": output}))
+    print(yaml.dump({"output": output}))

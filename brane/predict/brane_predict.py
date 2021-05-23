@@ -47,4 +47,4 @@ if __name__ == "__main__":
     "predict": predict
     }
     output = functions[command](model_name)
-    logger.info(yaml.dump({"output": output}))
+    print(yaml.dump({"output": output}))
