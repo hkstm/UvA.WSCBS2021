@@ -16,6 +16,8 @@ gc.enable()
 logger = logging.getLogger('brane')
 logger.setLevel(logging.DEBUG)
 
+data_loc_prefix = ''
+# data_loc_prefix = '../'
 
 # #eval_metric: 
 # def fit_lgb(Xtrain: str, ytrain: str, Xval: str, yval: str, modelname: str, eval_metric: int, max_depth: int, n_estimators:int, learning_rate: float, num_leaves: int, colsample_bytree: float, objective: str
@@ -45,8 +47,8 @@ logger.setLevel(logging.DEBUG)
 def fit_lgb(model_name: str, eval_metric: int, max_depth: int, n_estimators:int, learning_rate: float, num_leaves: int, colsample_bytree: float, objective: str
 ) -> str:
 
-    y_train = np.load('data/_train.npy')
-    train_ids = pd.read_pickle('data/_train_index.pkl')
+    y_train = np.load(f'{data_loc_prefix}data/_train.npy')
+    train_ids = pd.read_pickle(f'{data_loc_prefix}data/_train_index.pkl')
     n_splits = 5
 
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
@@ -65,7 +67,7 @@ def fit_lgb(model_name: str, eval_metric: int, max_depth: int, n_estimators:int,
     for train_index, test_index in skf.split(train_ids, y_train):
         
         logger.info(f'Fold {counter + 1}')
-        train = load_npz('data/_train.npz')
+        train = load_npz(f'{data_loc_prefix}data/_train.npz')
         X_fit = vstack([train[train_index[i*m:(i+1)*m]] for i in range(train_index.shape[0] // m + 1)])
         X_val = vstack([train[test_index[i*m:(i+1)*m]]  for i in range(test_index.shape[0] //  m + 1)])
         X_fit, X_val = csr_matrix(X_fit, dtype='float32'), csr_matrix(X_val, dtype='float32')
@@ -88,7 +90,7 @@ def fit_lgb(model_name: str, eval_metric: int, max_depth: int, n_estimators:int,
                     verbose=100, early_stopping_rounds=100)
 
                       
-        lgbm.save_model(f'models/{model_name}_{counter}.txt', num_iteration=lgbm.best_iteration) 
+        lgbm.save_model(f'{data_loc_prefix}models/{model_name}_{counter}.txt', num_iteration=lgbm.best_iteration) 
         counter += 1
         del X_fit, X_val, y_fit, y_val, train_index, test_index
         gc.collect()

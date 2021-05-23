@@ -15,13 +15,16 @@ gc.enable()
 logger = logging.getLogger('brane')
 logger.setLevel(logging.DEBUG)
 
+# data_loc_prefix = '../'
+data_loc_prefix = ''
+
 def predict(model_name: str) -> str:
     n_splits = 5
 
-    test_ids  = pd.read_pickle('data/_test_index.pkl')
+    test_ids  = pd.read_pickle(f'{data_loc_prefix}data/_test_index.pkl')
     lgb_test_result  = np.zeros(test_ids.shape[0])
 
-    test = load_npz('data/_test.npz')
+    test = load_npz(f'{data_loc_prefix}data/_test.npz')
     test = csr_matrix(test, dtype='float32')
 
     for split in range(n_splits):
@@ -31,9 +34,9 @@ def predict(model_name: str) -> str:
     del test
     gc.collect()
 
-    submission = pd.read_csv('data/sample_submission.csv')
+    submission = pd.read_csv(f'{data_loc_prefix}data/sample_submission.csv')
     submission['HasDetections'] = lgb_test_result / n_splits
-    submission.to_csv('data/lgb_submission.csv', index=False)
+    submission.to_csv(f'{data_loc_prefix}data/lgb_submission.csv', index=False)
 
     return "Made prediction"
 
