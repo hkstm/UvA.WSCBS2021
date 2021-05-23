@@ -9,6 +9,4 @@ __pycache__
 .join-microk8s-cluster
 .multi-node-microk8s.kubeconfig.yml
 .single-node-microk8s.kubeconfig.yml
-brane/data/sample_submission.csv
-brane/data/test.csv
-brane/data/train.csv
+brane/data/
