@@ -22,10 +22,10 @@ entrypoint:
   exec: brane_train.py
 
 actions:
-  'fit_lgb':
+  'tran':
     command:
       args:
-        - fit_lgb
+        - train
     input:
       - type: string
         name: model_name

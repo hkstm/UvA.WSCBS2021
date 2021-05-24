@@ -5,6 +5,7 @@ import sys
 import os
 import gc
 import logging
+import pickle
 
 import pandas as pd
 import numpy as np
@@ -15,8 +16,8 @@ gc.enable()
 logger = logging.getLogger('brane')
 logger.setLevel(logging.DEBUG)
 
-# data_loc_prefix = '../'
-data_loc_prefix = ''
+data_loc_prefix = '/data/'  # do this when using jupyterlab/brane
+# data_loc_prefix = '../'  # do this when testing locally
 
 def predict(model_name: str) -> str:
     n_splits = 5
@@ -28,13 +29,15 @@ def predict(model_name: str) -> str:
     test = csr_matrix(test, dtype='float32')
 
     for split in range(n_splits):
-        lgbm = lgb.Booster(model_file=f'models/{model_name}_{split}.txt')
+        with open(f'{data_loc_prefix}boosters/{model_name}_{split}.txt', 'rb') as f:
+            lgbm = pickle.load(f)
         lgb_test_result += lgbm.predict_proba(test)[:,1]
 
     del test
     gc.collect()
 
     submission = pd.read_csv(f'{data_loc_prefix}data/sample_submission.csv')
+    # submission = submission.sample(n=1000, random_state=1)
     submission['HasDetections'] = lgb_test_result / n_splits
     submission.to_csv(f'{data_loc_prefix}data/lgb_submission.csv', index=False)
 
