@@ -2,6 +2,14 @@
 
 Only, the Python scripts (brane_preprocessing.py, brane_train.py, brane_predict.py) & the corresponding container.yml files, and the train.csv and test.csv are initially required to get started.
 
+Run
+
+```bash
+ make build 
+```
+
+to build and push all packages. At that point start an ide (make start-ide whereever brane's make file is) and upload your local brane/preprocessing/brane_preprocessing.ipynb to jupyters /data/preprocessing/ and brane/data/{train,test}1000.csv to /data/data/ and run the cells in brane_preprocessing.ipynb in jupyterlab to get started. This should take like max a minute and then return some bytecode.
+
 ├── boosters
 
 │   ├── lightgbm_0.txt
