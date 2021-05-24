@@ -9,4 +9,3 @@ __pycache__
 .join-microk8s-cluster
 .multi-node-microk8s.kubeconfig.yml
 .single-node-microk8s.kubeconfig.yml
-brane/data/
