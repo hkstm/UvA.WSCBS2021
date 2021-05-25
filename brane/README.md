@@ -2,7 +2,13 @@
 
 Only, the Python scripts (brane_preprocessing.py, brane_train.py, brane_predict.py) & the corresponding container.yml files, and the train.csv and test.csv are initially required to get started.
 
-Run
+First run:
+
+```bash
+brane login http://localhost:8080 --username jovyan
+```
+
+Then run:
 
 ```bash
  make build 
