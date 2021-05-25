@@ -200,8 +200,8 @@ def preprocess(use_local: bool, use_sampled_data: bool):
 
 if __name__ == "__main__":
     command = sys.argv[1]
-    use_local = os.environ["USE_LOCAL"]
-    use_sampled_data = os.environ["USE_SAMPLED_DATA"]
+    use_local = os.environ["USE_LOCAL"] in ['true', 'True', True]
+    use_sampled_data = os.environ["USE_SAMPLED_DATA"] in ['true', 'True', True]
     functions = {
     "preprocess": preprocess,
     }
