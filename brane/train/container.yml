@@ -22,23 +22,13 @@ entrypoint:
   exec: brane_train.py
 
 actions:
-  'tran':
+  'train':
     command:
       args:
         - train
     input:
       - type: string
         name: model_name
-      - type: string
-        name: xtrain
-      - type: string
-        name: ytrain
-      - type: string
-        name: xval
-      - type: string
-        name: yval
-      - type: string
-        name: modelname
       - type: string
         name: eval_metric
       - type: integer
@@ -53,7 +43,10 @@ actions:
         name: colsample_bytree 
       - type: string
         name: objective
-
+      - type: boolean
+        name: use_local
+      - type: boolean
+        name: use_sampled_data
     output:
       - type: string
         name: output

@@ -26,10 +26,10 @@ actions:
       args:
         - preprocess
     input:
-      - type: string
-        name: path_train
-      - type: string
-        name: path_test
+      - type: boolean
+        name: use_local
+      - type: boolean
+        name: use_sampled_data
     output:
       - type: string
         name: output

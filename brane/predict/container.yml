@@ -28,6 +28,10 @@ actions:
     input:
       - type: string
         name: model_name
+      - type: boolean
+        name: use_local
+      - type: boolean
+        name: use_sampled_data
     output:
       - type: string
         name: output

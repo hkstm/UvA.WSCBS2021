@@ -14,17 +14,20 @@ from scipy.sparse import vstack, csr_matrix, load_npz
 from sklearn.model_selection import StratifiedKFold
 
 gc.enable()
-logger = logging.getLogger('brane')
-logger.setLevel(logging.DEBUG)
+# logger = logging.getLogger('brane')
+# logger.setLevel(logging.DEBUG)
 
 data_loc_prefix = '/data/'  # do this when using jupyterlab/brane
 # data_loc_prefix = '../'  # do this when testing locally
 
-def train(model_name: str, eval_metric: int, max_depth: int, n_estimators:int, learning_rate: float, num_leaves: int, colsample_bytree: float, objective: str
+def train(model_name: str, eval_metric: int, max_depth: int, n_estimators:int, learning_rate: float, num_leaves: int, colsample_bytree: float, objective: str, use_local: bool, use_sampled_data: bool
 ) -> str:
-
-    y_train = np.load(f'{data_loc_prefix}data/_train.npy')
-    train_ids = pd.read_pickle(f'{data_loc_prefix}data/_train_index.pkl')
+    use_sampled_data_str = '1000' if use_sampled_data else ''
+    data_loc_prefix = '../data/' if use_local else '/data/data/'
+    model_name = f"{model_name}{use_sampled_data_str}"
+  
+    y_train = np.load(f'{data_loc_prefix}_train{use_sampled_data_str}.npy')
+    train_ids = pd.read_pickle(f'{data_loc_prefix}_train_index{use_sampled_data_str}.pkl')
     n_splits = 5
 
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
@@ -35,15 +38,15 @@ def train(model_name: str, eval_metric: int, max_depth: int, n_estimators:int, l
     m = 100000
     n_splits = 5
 
-    logging.info('LightGBM')
+    # logging.info('LightGBM')
 
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
     skf.get_n_splits(train_ids, y_train)
 
     for train_index, test_index in skf.split(train_ids, y_train):
         
-        logger.info(f'Fold {counter + 1}')
-        train = load_npz(f'{data_loc_prefix}data/_train.npz')
+        # logger.info(f'Fold {counter + 1}')
+        train = load_npz(f'{data_loc_prefix}_train.npz')
         X_fit = vstack([train[train_index[i*m:(i+1)*m]] for i in range(train_index.shape[0] // m + 1)])
         X_val = vstack([train[test_index[i*m:(i+1)*m]]  for i in range(test_index.shape[0] //  m + 1)])
         X_fit, X_val = csr_matrix(X_fit, dtype='float32'), csr_matrix(X_val, dtype='float32')
@@ -90,8 +93,11 @@ if __name__ == "__main__":
     num_leaves = int(os.environ["NUM_LEAVES"])
     colsample_bytree = float(os.environ["COLSAMPLE_BYTREE"])
     objective = os.environ["OBJECTIVE"]
+    use_local = os.environ["USE_LOCAL"]
+    use_sampled_data = os.environ["USE_SAMPLED_DATA"]
+    
     functions = {
     "train": train
     }
-    output = functions[command](model_name, eval_metric, max_depth, n_estimators, learning_rate, num_leaves, colsample_bytree, objective)
+    output = functions[command](model_name, eval_metric, max_depth, n_estimators, learning_rate, num_leaves, colsample_bytree, objective, use_local, use_sampled_data)
     print(yaml.dump({"output": output}))

@@ -15,10 +15,6 @@ gc.enable()
 logger = logging.getLogger('brane')
 logger.setLevel(logging.DEBUG)
 
-data_loc_prefix = '/data/'  # do this when using jupyterlab/brane
-# data_loc_prefix = '../'  # do this when testing locally
-
-
 DTYPES = {
         'MachineIdentifier':                                    'category',
         'ProductName':                                          'category',
@@ -106,13 +102,15 @@ DTYPES = {
         }
 
 #eval_metric: 
-def preprocess(path_train: str, path_test: str):
+def preprocess(use_local: bool, use_sampled_data: bool):
+    use_sampled_data_str = '1000' if use_sampled_data else ''
+    data_loc_prefix = '../data/' if use_local else '/data/data/'
         
     # logger.info('Loading Train and Test Data into dataframe')
     # print("test print")
-    train = pd.read_csv(f'{data_loc_prefix}{path_train}', dtype=DTYPES)
+    train = pd.read_csv(f"{data_loc_prefix}train{use_sampled_data_str}.csv", dtype=DTYPES)
     train['MachineIdentifier'] = train.index.astype('uint32')
-    test  = pd.read_csv(f'{data_loc_prefix}{path_test}',  dtype=DTYPES)
+    test  = pd.read_csv(f"{data_loc_prefix}test{use_sampled_data_str}.csv",  dtype=DTYPES)
     test['MachineIdentifier']  = test.index.astype('uint32')
     gc.collect()
 
@@ -168,9 +166,9 @@ def preprocess(path_train: str, path_test: str):
     y_train = np.array(train['HasDetections'])
     train_ids = train.index
     test_ids  = test.index
-    train_ids.to_series().to_pickle(f'{data_loc_prefix}data/_train_index.pkl')
-    test_ids.to_series().to_pickle(f'{data_loc_prefix}data/_test_index.pkl')
-    np.save(f'{data_loc_prefix}data/_train.npy', y_train)
+    train_ids.to_series().to_pickle(f'{data_loc_prefix}_train_index{use_sampled_data_str}.pkl')
+    test_ids.to_series().to_pickle(f'{data_loc_prefix}_test_index{use_sampled_data_str}.pkl')
+    np.save(f'{data_loc_prefix}_train{use_sampled_data_str}.npy', y_train)
 
     del train['HasDetections'], train['MachineIdentifier'], test['MachineIdentifier']
     gc.collect()
@@ -192,8 +190,8 @@ def preprocess(path_train: str, path_test: str):
     m = 100000
     train = vstack([ohe.transform(train[i*m:(i+1)*m]) for i in range(train.shape[0] // m + 1)])
     test  = vstack([ohe.transform(test[i*m:(i+1)*m])  for i in range(test.shape[0] // m +  1)])
-    save_npz(f'{data_loc_prefix}data/_train.npz', train, compressed=True)
-    save_npz(f'{data_loc_prefix}data/_test.npz',  test,  compressed=True)
+    save_npz(f'{data_loc_prefix}_train{use_sampled_data_str}.npz', train, compressed=True)
+    save_npz(f'{data_loc_prefix}_test{use_sampled_data_str}.npz',  test,  compressed=True)
 
     del ohe, train, test
     gc.collect()
@@ -202,10 +200,10 @@ def preprocess(path_train: str, path_test: str):
 
 if __name__ == "__main__":
     command = sys.argv[1]
-    path_train = os.environ["PATH_TRAIN"]
-    path_test = os.environ["PATH_TEST"]
+    use_local = os.environ["USE_LOCAL"]
+    use_sampled_data = os.environ["USE_SAMPLED_DATA"]
     functions = {
     "preprocess": preprocess,
     }
-    output = functions[command](path_train, path_test)
+    output = functions[command](use_local, use_sampled_data)
     print(yaml.dump({"output": output}))
