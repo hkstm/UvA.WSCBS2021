@@ -93,8 +93,8 @@ if __name__ == "__main__":
     num_leaves = int(os.environ["NUM_LEAVES"])
     colsample_bytree = float(os.environ["COLSAMPLE_BYTREE"])
     objective = os.environ["OBJECTIVE"]
-    use_local = os.environ["USE_LOCAL"]
-    use_sampled_data = os.environ["USE_SAMPLED_DATA"]
+    use_local = os.environ["USE_LOCAL"] in ['true', 'True', True]
+    use_sampled_data = os.environ["USE_SAMPLED_DATA"] in ['true', 'True', True]
     
     functions = {
     "train": train

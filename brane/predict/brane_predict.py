@@ -46,8 +46,8 @@ def predict(model_name: str, use_local: bool, use_sampled_data: bool) -> str:
 if __name__ == "__main__":
     command = sys.argv[1]
     model_name = os.environ["MODEL_NAME"]
-    use_local = os.environ["USE_LOCAL"]
-    use_sampled_data = os.environ["USE_SAMPLED_DATA"]
+    use_local = os.environ["USE_LOCAL"] in ['true', 'True', True]
+    use_sampled_data = os.environ["USE_SAMPLED_DATA"] in ['true', 'True', True]
     functions = {
     "predict": predict
     }
