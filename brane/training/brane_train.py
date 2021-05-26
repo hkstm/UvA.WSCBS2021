@@ -62,11 +62,11 @@ def train(model_name: str, eval_metric: int, max_depth: int, n_estimators:int, l
                                         num_leaves=num_leaves,
                                         colsample_bytree=colsample_bytree,
                                         objective=objective, 
-                                        n_jobs=-1)
+                                        n_jobs=-1, silent=True)
         
         lgbm.fit(X_fit, y_fit, eval_metric=eval_metric, 
                     eval_set=[(X_val, y_val)], 
-                    verbose=100, early_stopping_rounds=100)
+                    verbose=False, early_stopping_rounds=100)
 
                       
         # lgbm.booster_.save_model(f'{data_loc_prefix}boosters/{model_name}_{counter}.txt') 
