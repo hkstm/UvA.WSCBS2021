@@ -25,13 +25,13 @@ def pie_chart(csv_path: str, column_name: str, threshold_others: float, title: s
 if __name__ == "__main__":
     command = sys.argv[1]
 
-    # path = os.environ["PATH"]
+    path = os.environ["PATH"]
     # column_name = os.environ["COLUMN_NAME"]
     # threshold_others = os.environ["THRESHOLD_OTHERS"]
     # title = os.environ["TITLE"]
     # drop_nan = os.environ["PATH"]
 
-    path = "/data/test1000.csv"
+    # path = "/data/test1000.csv"
     column_name = "Census_PowerPlatformRoleName"
     threshold_others = 10
     title = "Platform types"
