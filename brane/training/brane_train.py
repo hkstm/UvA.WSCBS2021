@@ -46,7 +46,7 @@ def train(model_name: str, eval_metric: int, max_depth: int, n_estimators:int, l
     for train_index, test_index in skf.split(train_ids, y_train):
         
         # logger.info(f'Fold {counter + 1}')
-        train = load_npz(f'{data_loc_prefix}_train.npz')
+        train = load_npz(f'{data_loc_prefix}_train{use_sampled_data_str}.npz')
         X_fit = vstack([train[train_index[i*m:(i+1)*m]] for i in range(train_index.shape[0] // m + 1)])
         X_val = vstack([train[test_index[i*m:(i+1)*m]]  for i in range(test_index.shape[0] //  m + 1)])
         X_fit, X_val = csr_matrix(X_fit, dtype='float32'), csr_matrix(X_val, dtype='float32')
