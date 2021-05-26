@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import plotly.express as px
+# import plotly.express as px
+import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 import os
@@ -17,19 +18,25 @@ def pie_chart(csv_path: str, column_name: str, threshold_others: float, title: s
     # Drop low values into "Others"
     platform_types.loc[platform_types["Count"] < threshold_others, column_name] = "Other platforms"
 
-    fig = px.pie(platform_types, values="Count", names=column_name, title=title)
-    fig.show()
+    # fig = px.pie(platform_types, values="Count", names=column_name, title=title)
+    # fig.show()
+    fig = plt.figure()
+
+    ax = fig.add_axes([0,0,1,1])
+    ax.axis('equal')
+    ax.pie(platform_types.index.tolist(), labels = range(len(platform_types.index.tolist())), autopct='%1.2f%%')
+    plt.show()
 
     return "Pie chart created"
 
 if __name__ == "__main__":
     command = sys.argv[1]
 
-    path = os.environ["PATH"]
+    path = os.environ["CSV_PATH"]
     # column_name = os.environ["COLUMN_NAME"]
     # threshold_others = os.environ["THRESHOLD_OTHERS"]
     # title = os.environ["TITLE"]
-    # drop_nan = os.environ["PATH"]
+    # drop_nan = os.environ["PATH"]1
 
     # path = "/data/test1000.csv"
     column_name = "Census_PowerPlatformRoleName"
