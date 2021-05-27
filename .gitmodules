@@ -1,0 +1,9 @@
+[submodule "brane/preprocess"]
+	path = brane/preprocess
+	url = https://github.com/yaaani85/preprocess
+[submodule "brane/train"]
+	path = brane/train
+	url = https://github.com/yaaani85/train
+[submodule "brane/predict"]
+	path = brane/predict
+	url = https://github.com/yaaani85/predict
