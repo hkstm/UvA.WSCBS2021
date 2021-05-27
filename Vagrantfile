@@ -23,7 +23,7 @@ Vagrant.configure("2") do |config|
     end
 
     main.vm.provision "shell", inline: <<-EOF
-      microk8s.add-node --token-tt #{REPLICAS} | grep 192.168.50.10 | sed 's/^ //' > /vagrant/.join-microk8s-cluster
+      microk8s.add-node --token-tt 7200 | grep 192.168.50.10 | sed 's/^ //' > /vagrant/.join-microk8s-cluster
       microk8s.config | yq eval '.clusters[0].cluster.server = "https://192.168.50.10:16443"' - > /vagrant/.multi-node-microk8s.kubeconfig.yml
     EOF
   end
