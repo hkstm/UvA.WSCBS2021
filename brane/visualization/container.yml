@@ -5,18 +5,18 @@ kind: compute
 dependencies:
   - python3
   - python3-yaml
-  - pip
+  - python3-pip
 
 install:
   - pip install pandas
-  - pip install plotly
+  - pip install matplotlib
 
 files:
-  - visualization.py
+  - brane_visualization.py
 
 entrypoint:
   kind: task
-  exec: visualization.py
+  exec: brane_visualization.py
 
 actions:
   'pie_chart':
@@ -25,7 +25,9 @@ actions:
         - pie_chart
     input:
       - type: string
-        name: csv_path
+        name: input_path
+      - type: string
+        name: file
       - type: string
         name: column_name
       - type: real
@@ -37,4 +39,4 @@ actions:
 
     output:
       - type: string
-        name: output
+        name: file
