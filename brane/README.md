@@ -1,4 +1,19 @@
-# Directory Structure
+## Brane data processing pipeline
+
+#### Development
+
+We use submodules for the individual packages of this repository. To clone the repository, run
+```bash
+git clone --recurse-submodules https://github.com/hkstm/UvA.WSCBS2021.git
+```
+
+or alternatively, run
+```bash
+git submodule init
+git submodule udpate
+```
+
+#### Directory Structure
 
 Only, the Python scripts (brane_preprocessing.py, brane_train.py, brane_predict.py) & the corresponding container.yml files, and the train.csv and test.csv are initially required to get started.
 
