@@ -13,3 +13,21 @@ build-visualization:
 # Example from https://docs.brane-framework.org/getting-started/quickstart/6.-working-with-files
 build-wordcloud:
 	brane unpublish -f wordcloud 1.0.0 && brane remove -f wordcloud && brane build -c wordcloud container.yml && brane push wordcloud 1.0.0
+
+# Test for using the self compiled brane cli binary with sudo permissions
+BRANE=sudo ../../brane-src/target/release/brane
+
+build-wc:
+	docker buildx create --use
+	sudo docker buildx create --use
+	$(BRANE) login http://localhost:8080 --username jovyan
+	$(BRANE) unpublish -f wordcloud 1.0.0
+	$(BRANE) remove -f wordcloud
+	$(BRANE) build -c wordcloud container.yml
+	$(BRANE) list
+
+test-wc:
+	$(BRANE) --debug test --data $(shell pwd) wordcloud
+
+try-wc:
+	$(BRANE) --debug repl
