@@ -16,3 +16,6 @@
 [submodule "brane/wscbs2021-predicting"]
 	path = brane/wscbs2021-predicting
 	url = https://github.com/yaaani85/wscbs2021-predicting.git
+[submodule "brane/--force"]
+	path = brane/--force
+	url = git@github.com:daanvinken/wscbs2021-visualization.git
