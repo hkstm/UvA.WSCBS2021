@@ -1,5 +1,5 @@
 name: visualization
-version: 1.0.1
+version: 1.0.0
 kind: compute
 
 dependencies:

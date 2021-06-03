@@ -7,15 +7,15 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from typing import List
 
-def groupbyplot(kind: str, csv_path: str, output_path: str, threshold_others: float, title: str, drop_nan: bool, column_name: str
- ) -> str:
+def groupbyplot(kind: str, csv_path: str, output_path: str, threshold_others: float,\
+                title: str, drop_nan: bool, column_name: str) -> str:
     '''
     Method to group a dataframe by a specific column and count occurences.
-    Both a barplot and pie chart can be made by specifying the 'kind'.
+    Both a barplot and pie chart can be made by specifying the 'INPUT'.
     Futhermore a threshold is available to place values below a specific count,
     which will be merged in a group called "Others".
     NaN values can be dropped by setting the corresponding boolean.
-    
+
     '''
     df = pd.read_csv(csv_path, low_memory=False)
     selection = df[column_name].value_counts(dropna=drop_nan)
@@ -27,7 +27,7 @@ def groupbyplot(kind: str, csv_path: str, output_path: str, threshold_others: fl
     # # Drop low values into "Others" and sum counts
     selection.loc[selection["Count"] < threshold_others, column_name] = "Others"
     selection = selection.groupby(column_name,as_index=False).agg({'Count': 'sum'})
-    
+
     # Create plot
     if kind == "piechart":
         ax = selection.plot(kind="pie", y="Count",\
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     # # For testing function (with 'brane --debug test visualization --data data' in CLI)
     # # NOTE: If you want to use the hardcoded values below instead, remove the first '/' in the file paths.
     # kind = "piechart"
-    # csv_path = "/data/data/test1000.csv"
+    # csv_path = "/data/test1000.csv"
     # output_path = "/data/histimg.png"
     # column_name = "Census_PowerPlatformRoleName"
     # threshold_others = float(10)
