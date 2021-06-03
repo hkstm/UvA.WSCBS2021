@@ -4,18 +4,18 @@ on: [ push, pull_request ]
 
 jobs:
   import:
-    name: import-${{ matrix.package.name }}
+    name: import ${{ matrix.package.repo }}
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
         package:
           - name: preprocessing
-            repo: yaaani85/preprocess
-          - name: train
-            repo: yaaani85/train
-          - name: predict
-            repo: yaaani85/predict
+            repo: yaaani85/wscbs2021-preprocessing
+          - name: training
+            repo: yaaani85/wscbs2021-training
+          - name: predicting
+            repo: yaaani85/wscbs2021-predicting
           - name: kaggle
             repo: romnn/kaggle-brane
     steps:
