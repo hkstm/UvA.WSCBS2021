@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+export PATH_TEST='data/test.csv' PATH_TRAIN='data/train.csv' MODEL_NAME='lightgbm' EVAL_METRIC='auc' MAX_DEPTH=1 N_ESTIMATORS=30000 LEARNING_RATE=0.05 NUM_LEAVES=4095 COLSAMPLE_BYTREE=0.28 OBJECTIVE='binary'

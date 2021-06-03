@@ -1,4 +1,4 @@
-name: train
+name: training
 version: 1.0.0
 kind: compute
 
@@ -11,30 +11,24 @@ install:
   - pip install lightgbm
   - pip install pandas
   - pip install numpy
+  - pip install scikit-learn
+  - pip install scipy
 
 files:
-  - preprocess.py
+  - brane_train.py
 
 entrypoint:
   kind: task
-  exec: preprocess.py
+  exec: brane_train.py
 
 actions:
-  'fit_lgb':
+  'train':
     command:
       args:
-        - fit_lgb
+        - train
     input:
       - type: string
-        name: xtrain
-      - type: string
-        name: ytrain
-      - type: string
-        name: xval
-      - type: string
-        name: yval
-      - type: string
-        name: modelname
+        name: model_name
       - type: string
         name: eval_metric
       - type: integer
@@ -49,7 +43,10 @@ actions:
         name: colsample_bytree 
       - type: string
         name: objective
-
+      - type: boolean
+        name: use_local
+      - type: boolean
+        name: use_sampled_data
     output:
       - type: string
         name: output
