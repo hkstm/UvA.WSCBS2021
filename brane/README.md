@@ -10,7 +10,7 @@ git clone --recurse-submodules https://github.com/hkstm/UvA.WSCBS2021.git
 or alternatively, run
 ```bash
 git submodule init
-git submodule udpate
+git submodule update
 ```
 
 #### Directory Structure
