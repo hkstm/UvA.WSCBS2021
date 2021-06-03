@@ -4,17 +4,19 @@ on: [ push, pull_request ]
 
 jobs:
   import:
+    name: import-${{ matrix.package.name }}
     runs-on: ubuntu-20.04
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - package: preprocess
+        package:
+          - name: preprocessing
             repo: yaaani85/preprocess
-          - package: train
+          - name: train
             repo: yaaani85/train
-          - package: predict
+          - name: predict
             repo: yaaani85/predict
-          - package: kaggle
+          - name: kaggle
             repo: romnn/kaggle-brane
     steps:
     - name: Set up QEMU
@@ -28,8 +30,8 @@ jobs:
     - name: Import brane package
       shell: bash
       run: |
-        sudo $HOME/.local/bin/brane import ${{ matrix.repo }}
-        (set -o pipefail && echo "import ${{ matrix.package }};" | sudo $HOME/.local/bin/brane repl -c)
+        sudo $HOME/.local/bin/brane import ${{ matrix.package.repo }}
+        (set -o pipefail && echo "import ${{ matrix.package.name }};" | sudo $HOME/.local/bin/brane repl -c)
 
   # build:
   #   runs-on: ubuntu-20.04
