@@ -7,3 +7,12 @@
 [submodule "brane/setup-brane-action"]
 	path = brane/setup-brane-action
 	url = https://github.com/romnn/setup-brane-action.git
+[submodule "brane/wscbs2021-preprocessing"]
+	path = brane/wscbs2021-preprocessing
+	url = https://github.com/yaaani85/wscbs2021-preprocessing.git
+[submodule "brane/wscbs2021-training"]
+	path = brane/wscbs2021-training
+	url = https://github.com/yaaani85/wscbs2021-training.git
+[submodule "brane/wscbs2021-predicting"]
+	path = brane/wscbs2021-predicting
+	url = https://github.com/yaaani85/wscbs2021-predicting.git
