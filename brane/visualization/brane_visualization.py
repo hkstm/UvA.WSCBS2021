@@ -1,32 +1,34 @@
 #!/usr/bin/env python3
 
-import matplotlib.pyplot as plt
-import pandas as pd
 import sys
 import os
 import yaml
+import matplotlib.pyplot as plt
+import pandas as pd
 from typing import List
 
-def groupby_plot(kind: str, csv_path: str, output_path: str, threshold_others: float, title: str, drop_nan: bool, column_name: str,) -> str:
+def groupbyplot(kind: str, csv_path: str, output_path: str, threshold_others: float, title: str, drop_nan: bool, column_name: str
+ ) -> str:
     '''
     Method to group a dataframe by a specific column and count occurences.
     Both a barplot and pie chart can be made by specifying the 'kind'.
     Futhermore a threshold is available to place values below a specific count,
     which will be merged in a group called "Others".
     NaN values can be dropped by setting the corresponding boolean.
+    
     '''
     df = pd.read_csv(csv_path, low_memory=False)
     selection = df[column_name].value_counts(dropna=drop_nan)
-    print(df["HasDetections"].head())
+    # print(df["HasDetections"].head())
 
-    # Fix column names
+    # # Fix column names
     columns = {"index":column_name, "size":"Count"}
     selection = selection.to_frame(name="size").reset_index().rename(columns=columns, inplace=False)
 
-    # Drop low values into "Others" and sum counts
+    # # Drop low values into "Others" and sum counts
     selection.loc[selection["Count"] < threshold_others, column_name] = "Others"
     selection = selection.groupby(column_name,as_index=False).agg({'Count': 'sum'})
-
+    
     # Create plot
     if kind == "piechart":
         ax = selection.plot(kind="pie", y="Count",\
@@ -45,6 +47,7 @@ def groupby_plot(kind: str, csv_path: str, output_path: str, threshold_others: f
 
     return output_path
 
+
 if __name__ == "__main__":
     '''
     Script is made specifically for a brane package,
@@ -55,28 +58,30 @@ if __name__ == "__main__":
     '''
     command = sys.argv[1]
 
-    kind = os.environ["KIND"]
-    input_path = os.environ["INPUT_PATH"]
-    file = os.environ["FILE"]
+    kind = os.environ["INPUT"]
+    csv_path = os.environ["CSV_PATH"]
+    output_path = os.environ["OUTPUT_PATH"]
     column_name = os.environ["COLUMN_NAME"]
     threshold_others = float(os.environ["THRESHOLD_OTHERS"])
-    title = os.environ["TITLE"]
+    title = os.environ["PLOT_TITLE"]
     drop_nan = os.environ["DROP_NAN"] in ['true', 'True', True]
 
-    ##########################################################################################
-    # For testing function (with 'brane --debug test visualization --data data' in CLI)
-    # NOTE: If you want to use the hardcoded values below instead, remove the first '/' in the file paths.
+    # ##########################################################################################
+    # # For testing function (with 'brane --debug test visualization --data data' in CLI)
+    # # NOTE: If you want to use the hardcoded values below instead, remove the first '/' in the file paths.
     # kind = "piechart"
-    # input_path = "/data/data/test1000.csv"
-    # file = "/data/histimg.png"
+    # csv_path = "/data/data/test1000.csv"
+    # output_path = "/data/histimg.png"
     # column_name = "Census_PowerPlatformRoleName"
-    # threshold_others = 10
-    # title = "Platform types"
+    # threshold_others = float(10)
+    # title = "PlatformTypes"
     # drop_nan = True
-    ##########################################################################################
+    # ##########################################################################################
 
     functions = {
-    "groupby_plot": groupby_plot,
+    "groupbyplot": groupbyplot,
     }
-    output = functions[command](kind, input_path, file, threshold_others, title, drop_nan, column_name)
+
+    output = functions[command](kind, csv_path, output_path, threshold_others, title, drop_nan, column_name)
+
     print(yaml.dump({"output": output}))
