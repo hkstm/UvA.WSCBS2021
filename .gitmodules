@@ -1,6 +1,3 @@
 [submodule "brane/kaggle-web-traffic"]
 	path = brane/kaggle-web-traffic
 	url = https://github.com/Arturus/kaggle-web-traffic
-[submodule "brane/wscbs2021-visualization"]
-	path = brane/wscbs2021-visualization
-	url = git@github.com:daanvinken/wscbs2021-visualization.git
