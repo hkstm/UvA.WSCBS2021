@@ -1,0 +1,3 @@
+[submodule "brane/kaggle-web-traffic"]
+	path = brane/kaggle-web-traffic
+	url = https://github.com/Arturus/kaggle-web-traffic
