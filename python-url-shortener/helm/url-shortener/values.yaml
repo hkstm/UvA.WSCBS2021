@@ -2,6 +2,11 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+registry:
+  name: https://registry-1.docker.io
+  user: ""
+  password: ""
+
 redis:
   enabled: true
   fullnameOverride: url-shortener-redis
@@ -26,6 +31,11 @@ redis:
     create: false
 
 authentication:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+
   secretKey:
     value: "changeme"
 
@@ -41,6 +51,11 @@ authentication:
       - url-shortener-gateway
 
 shortener:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+
   secretKey:
     value: "changeme"
 

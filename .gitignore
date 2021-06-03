@@ -3,5 +3,11 @@ __pycache__
 .dccache
 .vscode
 .vscode/settings.json
-microk8s.kubeconfig
 .history
+.vagrant
+*.log
+.join-microk8s-cluster
+.multi-node-microk8s.kubeconfig.yml
+.single-node-microk8s.kubeconfig.yml
+brane/.ipynb_checkpoints/
+brane/data/*.csv
