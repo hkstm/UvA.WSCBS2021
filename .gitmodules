@@ -1,3 +1,6 @@
 [submodule "brane/kaggle-web-traffic"]
 	path = brane/kaggle-web-traffic
 	url = https://github.com/Arturus/kaggle-web-traffic
+[submodule "brane/kaggle-brane"]
+	path = brane/kaggle-brane
+	url = https://github.com/romnn/kaggle-brane.git
