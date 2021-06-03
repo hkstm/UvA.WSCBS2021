@@ -17,7 +17,6 @@ def groupby_plot(kind: str, csv_path: str, output_path: str, threshold_others: f
     '''
     df = pd.read_csv(csv_path, low_memory=False)
     selection = df[column_name].value_counts(dropna=drop_nan)
-    print(df["HasDetections"].head())
 
     # Fix column names
     columns = {"index":column_name, "size":"Count"}
