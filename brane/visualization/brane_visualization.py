@@ -17,6 +17,7 @@ def groupby_plot(kind: str, csv_path: str, output_path: str, threshold_others: f
     '''
     df = pd.read_csv(csv_path, low_memory=False)
     selection = df[column_name].value_counts(dropna=drop_nan)
+    print(df["HasDetections"].head())
 
     # Fix column names
     columns = {"index":column_name, "size":"Count"}
@@ -64,6 +65,7 @@ if __name__ == "__main__":
 
     ##########################################################################################
     # For testing function (with 'brane --debug test visualization --data data' in CLI)
+    # NOTE: If you want to use the hardcoded values below instead, remove the first '/' in the file paths.
     # kind = "piechart"
     # input_path = "/data/data/test1000.csv"
     # file = "/data/histimg.png"
