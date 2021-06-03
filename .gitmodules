@@ -4,3 +4,6 @@
 [submodule "brane/kaggle-brane"]
 	path = brane/kaggle-brane
 	url = https://github.com/romnn/kaggle-brane.git
+[submodule "brane/setup-brane-action"]
+	path = brane/setup-brane-action
+	url = https://github.com/romnn/setup-brane-action.git
