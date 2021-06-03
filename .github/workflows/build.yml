@@ -1,0 +1,57 @@
+name: build
+
+on: [ push, pull_request ]
+
+jobs:
+  import:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        include:
+          - package: preprocess
+            repo: yaaani85/preprocess
+          - package: train
+            repo: yaaani85/train
+          - package: predict
+            repo: yaaani85/predict
+          - package: kaggle
+            repo: romnn/kaggle-brane
+    steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Install brane CLI
+      uses: romnn/setup-brane-action@master
+
+    - name: Import brane package
+      shell: bash
+      run: |
+        sudo $HOME/.local/bin/brane import ${{ matrix.repo }}
+        (set -o pipefail && echo "import ${{ matrix.package }};" | sudo $HOME/.local/bin/brane repl -c)
+
+  # build:
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Set up QEMU
+  #     uses: docker/setup-qemu-action@v1
+  #   - name: Set up Docker Buildx
+  #     uses: docker/setup-buildx-action@v1
+
+  #   - name: Install brane CLI
+  #     uses: romnn/setup-brane-action@master
+    
+  #   - name: Build the brane package
+  #     run: |
+  #       sudo $HOME/.local/bin/brane build container.yml
+  #       sudo $HOME/.local/bin/brane list
+  #   - name: Run example brane script
+  #     shell: bash
+  #     # env:
+  #     #   KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+  #     #   KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+  #     run: |
+  #       (set -o pipefail && echo "import kaggle; let result := download_competition(\"web-traffic-time-series-forecasting\", \"./data\", \"username\", \"password\", false, true); result.success;" | sudo $HOME/.local/bin/brane repl -c | tail -n 1)
+
