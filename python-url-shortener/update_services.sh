@@ -103,9 +103,14 @@ fi
 # update the deployment
 # because the chart we want to install is not in a chart repository but local only
 # we use the local helm and the kubeconfig to access the cluster
+helm delete url-shortener \
+  --kubeconfig ${MICROK8S_KUBECONFIG} || true
+
 helm upgrade url-shortener $CHART_DIR \
   --kubeconfig ${MICROK8S_KUBECONFIG} \
-  --install --wait --atomic --force --timeout 10m0s
+  --set registry.user="${DOCKER_LOGIN_NAME}" \
+  --set registry.password="${DOCKER_LOGIN_PASSWORD}" \
+  --install --wait --atomic --force --timeout 20m0s
 
 echo ""
 echo "$LINE"

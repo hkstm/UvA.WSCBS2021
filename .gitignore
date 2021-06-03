@@ -10,3 +10,5 @@ __pycache__
 .multi-node-microk8s.kubeconfig.yml
 .single-node-microk8s.kubeconfig.yml
 brane/visualization/workspace.code-workspace
+brane/.ipynb_checkpoints/
+brane/data/*.csv
