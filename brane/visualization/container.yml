@@ -19,11 +19,13 @@ entrypoint:
   exec: brane_visualization.py
 
 actions:
-  'pie_chart':
+  'groupby_plot':
     command:
       args:
-        - pie_chart
+        - groupby_plot
     input:
+      - type: string
+        name: kind
       - type: string
         name: input_path
       - type: string
