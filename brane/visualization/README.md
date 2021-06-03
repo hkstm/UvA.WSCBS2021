@@ -4,8 +4,8 @@ Example input for CLI way with `brane --debug test visualization --data data`:
 - /data/data/test1000.csv
 - /data/piechart.png
 - Census_PowerPlatformRoleName
-- 10
-- Platform types
+- 10.0
+- PlatformTypes
 - true
 
 Package can be build and published with the **Makefile** in the **brane** directory. After which the notebook can be executed within the Jupyter IDE.

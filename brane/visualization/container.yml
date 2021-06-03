@@ -7,38 +7,37 @@ dependencies:
   - python3-yaml
   - python3-pip
 
-install:
-  - pip install pandas
-  - pip install matplotlib
-
 files:
-  - brane_visualization.py
+- brane_visualization.py
+
+install:
+  - pip3 install pandas
+  - pip3 install matplotlib
 
 entrypoint:
   kind: task
   exec: brane_visualization.py
 
 actions:
-  'groupby_plot':
+  'groupbyplot':
     command:
       args:
-        - groupby_plot
+        - groupbyplot
     input:
       - type: string
-        name: kind
+        name: input
       - type: string
-        name: input_path
+        name: csv_path
       - type: string
-        name: file
+        name: output_path
       - type: string
         name: column_name
       - type: real
         name: threshold_others
       - type: string
-        name: title
+        name: plot_title
       - type: boolean
         name: drop_nan
-
     output:
       - type: string
         name: output
