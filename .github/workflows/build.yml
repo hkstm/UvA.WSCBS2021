@@ -16,8 +16,11 @@ jobs:
             repo: yaaani85/wscbs2021-training
           - name: predicting
             repo: yaaani85/wscbs2021-predicting
+          - name: visualization
+            repo: daanvinken/wscbs2021-visualization
           - name: kaggle
             repo: romnn/kaggle-brane
+          
     steps:
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
