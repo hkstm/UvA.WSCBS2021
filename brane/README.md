@@ -94,6 +94,11 @@ to build and push all packages. At that point start an ide (make start-ide where
 
 │   └── env.example
 
+#### Running the pipeline
+After placing the data files in the right directory, and building the following packages with the Makefile, the `pipeline.ipynb' file can be opened up in the Brane IDE. Make sure to upload both the notebook and the necessary input files `test.csv`/`test1000.csv` and `train.csv`/`train.csv`. For further background info on brane, packages and coding we refer to the [documentation](https://docs.brane-framework.org/).
+
+#### Kaggle module
+For the kaggle module we refer to the directory containing a elaborate description in the Readme file [here](https://github.com/romnn/kaggle-brane/tree/a5f74e5a199365cea4178429e5adac8ca83523bc).
 
 # Notes
 
