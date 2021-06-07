@@ -1,5 +1,7 @@
 ## Brane data processing pipeline
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4905892.svg)](https://doi.org/10.5281/zenodo.4905892)
+
 #### Development
 
 We use submodules for the individual packages of this repository. To clone the repository, run
