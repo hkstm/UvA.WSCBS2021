@@ -19,3 +19,7 @@
 	path = brane/setup-brane-action
 	url = https://github.com/romnn/setup-brane-action.git
 	branch = master
+[submodule "wscbs2021-visualization"]
+	path = wscbs2021-visualization
+	url = https://github.com/daanvinken/wscbs2021-visualization.git
+	branch = master
